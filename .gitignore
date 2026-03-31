@@ -1,0 +1,4 @@
+# since each user need to compile to so or dll by their own, therefore, ignore them
+*.so
+*.dll
+*.pyc
