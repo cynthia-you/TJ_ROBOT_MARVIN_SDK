@@ -8,7 +8,7 @@ import os
 import glob
 import math
 import sys
-from PythonSdk.MarvinRobot import MarvinRobot, RobotDataManager,error_dict, FXObjType, FXTerminalType
+from PythonSdk.GentoRobot import GentoRobot, RobotDataManager,error_dict, FXObjType, FXTerminalType
 import ast
 # from PIL import Image, ImageDraw, ImageTk
 from pathlib import Path
@@ -2862,7 +2862,7 @@ if __name__ == "__main__":
     arm_main_state_with = 130
     data_queue = queue.Queue()
     crr_pth = os.getcwd()
-    robot = MarvinRobot()
+    robot = GentoRobot()
 
     # '''ini kine of ARM0 & ARM1'''
     # arm0_kine=robot.init_single_arm_kinematics(0,"ccs_m6_40.MvKDCfg")
