@@ -24,11 +24,11 @@ extern "C"
      * @param ip3 Third octet of the IP address (e.g., 1 in 192.168.1.2)
      * @param ip4 Fourth octet of the IP address (e.g., 2 in 192.168.1.2)
      *
-     * @return FX_BOOL Connection result:
-     *         - FX_TRUE: Connection established successfully
-     *         - FX_FALSE: Connection failed
+     * @return int Connection result:
+     *         - 1: Connection established successfully
+     *         - 0: Connection failed
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_System_connect(FX_UCHAR ip1, FX_UCHAR ip2, FX_UCHAR ip3, FX_UCHAR ip4);
+    CONTROL_SDK_API int FX_L0_System_connect(unsigned char ip1, unsigned char ip2, unsigned char ip3, unsigned char ip4);
     /**
      * @brief Test the network communication latency
      *
@@ -36,20 +36,20 @@ extern "C"
      * to check if the system is properly connected to the network.
      * The function returns a time delay in milliseconds indicating the test outcome.
      *
-     * @return FX_INT32 Test communication delay:
+     * @return int Test communication delay:
      *         - Positive values: Test passed, indicate communication latency
      *         - Negative values: Communication is not built
      *
      * @note The test may take some time to complete depending on network conditions
      */
-    CONTROL_SDK_API FX_INT32 FX_L0_System_Testconnect(FX_VOID);
+    CONTROL_SDK_API int FX_L0_System_Testconnect(void);
     /**
      * @brief Enable local logging functionality
      *
      * This function activates the local logging system, allowing the application to print
      * diagnostic information to stdout.
      */
-    CONTROL_SDK_API FX_VOID FX_L0_System_LocalLogOn(FX_VOID);
+    CONTROL_SDK_API void FX_L0_System_LocalLogOn(void);
 
     /**
      * @brief Disable local logging functionality
@@ -57,7 +57,7 @@ extern "C"
      * This function deactivates the local logging system, not allowing the application to print
      * diagnostic information to stdout.
      */
-    CONTROL_SDK_API FX_VOID FX_L0_System_LocalLogOff(FX_VOID);
+    CONTROL_SDK_API void FX_L0_System_LocalLogOff(void);
     /**
      * @brief Clear the communication buffer and prepare for new communication
      *
@@ -69,15 +69,15 @@ extern "C"
      *                - 0: Non-blocking operation, returns immediately
      *                - >0: Block for specified timeout duration
      *
-     * @return FX_BOOL Operation result:
-     *         - FX_TRUE: Communication cleared successfully
-     *         - FX_FALSE: Clear operation failed or timed out
+     * @return int Operation result:
+     *         - 1: Communication cleared successfully
+     *         - 0: Clear operation failed or timed out
      *
      * @see FX_L0_Communication_Send() Send data through the communication interface
      * @see FX_L0_Communication_SendWaitResponse() Send data through the communication interface
      * @see and wait until the data has been processed by controller.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Communication_Clear(FX_UINT32 timeout);
+    CONTROL_SDK_API int FX_L0_Communication_Clear(unsigned int timeout);
     /**
      * @brief Send data through the communication interface
      *
@@ -86,9 +86,9 @@ extern "C"
      * appropriate buffer or structure before calling this function. The function handles
      * the transmission process and returns the result of the send operation.
      *
-     * @return FX_BOOL Send operation result:
-     *         - FX_TRUE: Data sent successfully
-     *         - FX_FALSE: Send operation failed
+     * @return int Send operation result:
+     *         - 1: Data sent successfully
+     *         - 0: Send operation failed
      *
      * @note Data must be properly prepared in the send buffer before calling this function
      *
@@ -96,7 +96,7 @@ extern "C"
      * @see FX_L0_Communication_SendWaitResponse() Send data through the communication interface
      * and wait for a response.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Communication_Send(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Communication_Send(void);
     /**
      * @brief Send data through the communication interface and wait for a response
      *
@@ -108,7 +108,7 @@ extern "C"
      *                 - 0: No waiting, returns immediately after sending
      *                 - >0: Wait for specified timeout duration
      *
-     * @return FX_INT32 Operation result:
+     * @return int Operation result:
      *         - Positive values: Response received successfully, indicating response time in milliseconds
      *         - 0: Response timeout
      *         - -1: Send operation failed
@@ -120,7 +120,7 @@ extern "C"
      * @see FX_L0_Communication_Clear() Clear the communication buffer and prepare for new communication
      * @see FX_L0_Communication_Send() Send data through the communication interface.
      */
-    CONTROL_SDK_API FX_INT32 FX_L0_Communication_SendWaitResponse(FX_UINT32 time_out);
+    CONTROL_SDK_API int FX_L0_Communication_SendWaitResponse(unsigned int time_out);
     /**
      * @brief Get the version information of the system.
      *
@@ -128,7 +128,7 @@ extern "C"
      * is typically composed of major, minor, and patch numbers encoded into a
      * 32-bit integer. The encoding scheme is implementation-specific.
      *
-     * @return FX_INT32 The encoded system version number.
+     * @return int The encoded system version number.
      *         - Positive values: represent valid version encodings.
      *         - -1: Execution error.
      *         - -2: Response is timeout.
@@ -137,7 +137,7 @@ extern "C"
      *       system specification. Common encodings include:
      *       - (major << 16) | (minor << 8) | patch
      */
-    CONTROL_SDK_API FX_INT32 FX_L0_System_GetVersion(FX_VOID);
+    CONTROL_SDK_API int FX_L0_System_GetVersion(void);
     /**
      * @brief Reboots the system immediately.
      *
@@ -145,10 +145,10 @@ extern "C"
      * will begin shutdown procedures and restart. All unsaved data may be lost.
      * The function may not return if the reboot is successful.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the reboot command was successfully
-     *                  queued or initiated. Returns #FX_FALSE if the system
+     * @return int Returns #1 if the reboot command was successfully
+     *                  queued or initiated. Returns #0 if the system
      *                  cannot reboot due to hardware limitations, safety locks,
-     *                  or other constraints. Note that a return of #FX_TRUE
+     *                  or other constraints. Note that a return of #1
      *                  does not guarantee successful reboot completion, only
      *                  that the reboot sequence was initiated.
      *
@@ -161,7 +161,7 @@ extern "C"
      * @post If successful, the system will restart. The function may not return
      *       control to the caller.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_System_Reboot(FX_VOID);
+    CONTROL_SDK_API int FX_L0_System_Reboot(void);
     /**
      * @brief Retrieves an integer parameter value by its name.
      *
@@ -173,11 +173,11 @@ extern "C"
      *                 Maximum length is 29 characters plus null terminator.
      *                 Parameter names are case-sensitive unless otherwise specified
      *                 by the system implementation.
-     * @param[out] ret_value Pointer to an FX_INT32 variable where the parameter
+     * @param[out] ret_value Pointer to an int variable where the parameter
      *                      value will be stored if found. The pointer must not be NULL.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the parameter was successfully found
-     *                  and its value retrieved. Returns #FX_FALSE if the parameter
+     * @return int Returns #1 if the parameter was successfully found
+     *                  and its value retrieved. Returns #0 if the parameter
      *                  does not exist, the name is invalid.
      *
      * @warning The name buffer must be properly null-terminated. Passing a
@@ -185,12 +185,12 @@ extern "C"
      *          (excluding null terminator) may cause undefined behavior.
      *
      * @pre The parameter with the specified name should exist in the parameter store.
-     *      The ret_value pointer should point to a valid FX_INT32 memory location.
+     *      The ret_value pointer should point to a valid int memory location.
      *
-     * @post If the function returns #FX_TRUE, *ret_value contains the parameter value.
-     *       If the function returns #FX_FALSE, the content of *ret_value is unchanged.
+     * @post If the function returns #1, *ret_value contains the parameter value.
+     *       If the function returns #0, the content of *ret_value is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Param_GetInt(FX_CHAR name[30], FX_INT32 *ret_value);
+    CONTROL_SDK_API int FX_L0_Param_GetInt(char name[30], int *ret_value);
     /**
      * @brief Retrieves a floating-point parameter value by its name.
      *
@@ -202,11 +202,11 @@ extern "C"
      *                 Maximum length is 29 characters plus null terminator.
      *                 Parameter names are case-sensitive unless otherwise specified
      *                 by the system implementation.
-     * @param[out] ret_value Pointer to an FX_FLOAT variable where the parameter
+     * @param[out] ret_value Pointer to an float variable where the parameter
      *                      value will be stored if found. The pointer must not be NULL.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the parameter was successfully found
-     *                  and its value retrieved. Returns #FX_FALSE if the parameter
+     * @return int Returns #1 if the parameter was successfully found
+     *                  and its value retrieved. Returns #0 if the parameter
      *                  does not exist, the name is invalid.
      *
      * @warning The name buffer must be properly null-terminated. Passing a
@@ -214,12 +214,12 @@ extern "C"
      *          (excluding null terminator) may cause undefined behavior.
      *
      * @pre The parameter with the specified name should exist in the parameter store.
-     *      The ret_value pointer should point to a valid FX_FLOAT memory location.
+     *      The ret_value pointer should point to a valid float memory location.
      *
-     * @post If the function returns #FX_TRUE, *ret_value contains the parameter value.
-     *       If the function returns #FX_FALSE, the content of *ret_value is unchanged.
+     * @post If the function returns #1, *ret_value contains the parameter value.
+     *       If the function returns #0, the content of *ret_value is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Param_GetFloat(FX_CHAR name[30], FX_FLOAT *ret_value);
+    CONTROL_SDK_API int FX_L0_Param_GetFloat(char name[30], float *ret_value);
     /**
      * @brief Sets an integer parameter to the specified value.
      *
@@ -233,8 +233,8 @@ extern "C"
      *                 by the system implementation.
      * @param[in] target_value The new integer value to assign to the parameter.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the parameter was successfully set
-     *                  to the target value. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the parameter was successfully set
+     *                  to the target value. Returns #0 if the operation
      *                  failed due to invalid name.
      *
      * @warning The name buffer must be properly null-terminated. Passing a
@@ -245,11 +245,11 @@ extern "C"
      *      the parameter. Some parameters may be read-only or have restricted
      *      access.
      *
-     * @post If the function returns #FX_TRUE, subsequent calls to
+     * @post If the function returns #1, subsequent calls to
      *       FX_L0_Param_GetInt() with the same name will return target_value
      *       (or the persisted value if storage is immediate and successful).
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Param_SetInt(FX_CHAR name[30], FX_INT32 target_value);
+    CONTROL_SDK_API int FX_L0_Param_SetInt(char name[30], int target_value);
     /**
      * @brief Sets a floating-point parameter to the specified value.
      *
@@ -263,8 +263,8 @@ extern "C"
      *                 by the system implementation.
      * @param[in] target_value The new floating-point value to assign to the parameter.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the parameter was successfully set
-     *                  to the target value. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the parameter was successfully set
+     *                  to the target value. Returns #0 if the operation
      *                  failed due to invalid name, insufficient permissions,
      *                  write protection, storage failure, or other errors.
      *
@@ -276,11 +276,11 @@ extern "C"
      *      the parameter. Some parameters may be read-only or have restricted
      *      access.
      *
-     * @post If the function returns #FX_TRUE, subsequent calls to
+     * @post If the function returns #1, subsequent calls to
      *       FX_L0_Param_GetFloat() with the same name will return target_value
      *       (or the persisted value if storage is immediate and successful).
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Param_SetFloat(FX_CHAR name[30], FX_FLOAT target_value);
+    CONTROL_SDK_API int FX_L0_Param_SetFloat(char name[30], float target_value);
     /**
      * @brief Saves all modified parameters to persistent storage.
      *
@@ -288,8 +288,8 @@ extern "C"
      * FX_L0_Param_SetInt(), FX_L0_Param_SetFloat(), etc.) to the configuration file.
      * This ensures that parameter changes survive a system reset or power cycle.
      *
-     * @return FX_BOOL Returns #FX_TRUE if all parameters were successfully saved
-     *                  to persistent storage. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if all parameters were successfully saved
+     *                  to persistent storage. Returns #0 if the operation
      *                  failed due to storage errors, insufficient space, or
      *                  other system errors.
      *
@@ -300,25 +300,25 @@ extern "C"
      * @pre There should be pending parameter modifications to save. Calling this
      *      function when no parameters have been modified may be a no-op.
      *
-     * @post If the function returns #FX_TRUE, all parameter modifications are
-     *       persisted and will survive system restart. If it returns #FX_FALSE,
+     * @post If the function returns #1, all parameter modifications are
+     *       persisted and will survive system restart. If it returns #0,
      *       some or all modifications may be lost on restart.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Param_Save(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Param_Save(void);
     /**
      * @brief Clears all data received from the Arm0 terminal.
      *
      * This function clears the content received from the Arm0 terminal device,
      * resetting it to a blank state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the terminal data was successfully
-     *                  cleared. Returns #FX_FALSE if the operation failed due
+     * @return int Returns #1 if the terminal data was successfully
+     *                  cleared. Returns #0 if the operation failed due
      *                  to hardware errors, invalid terminal state, or other
      *                  system errors.
      *
      * @see FX_L0_Arm0_Terminal_GetData(), FX_L0_Arm0_Terminal_SetData()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Terminal_ClearData(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm0_Terminal_ClearData(void);
     /**
      * @brief Retrieves data from the Arm0 terminal input channel.
      *
@@ -339,7 +339,7 @@ extern "C"
      *                     is stored as raw bytes and may not be null-terminated.
      *                     This parameter must not be NULL.
      *
-     * @return FX_INT32 The number of bytes actually read and stored in data_ptr.
+     * @return int The number of bytes actually read and stored in data_ptr.
      *                  Returns 0 if no data is currently available.
      *
      * @post If the return value is positive, channel_type_ptr contains the
@@ -348,7 +348,7 @@ extern "C"
      *
      * @see FX_L0_Arm0_Terminal_ClearData(), FX_L0_Arm0_Terminal_SetData()
      */
-    CONTROL_SDK_API FX_INT32 FX_L0_Arm0_Terminal_GetData(FX_INT32 *channel_type_ptr, FX_UCHAR data_ptr[64]);
+    CONTROL_SDK_API int FX_L0_Arm0_Terminal_GetData(int *channel_type_ptr, unsigned char data_ptr[64]);
     /**
      * @brief Sends data to the Arm0 terminal output channel.
      *
@@ -365,11 +365,11 @@ extern "C"
      *                    The data may contain text, binary data, or control
      *                    sequences. The pointer must not be NULL.
      * @param[in] data_len The number of bytes to send from data_ptr. Must be
-     *                    non-negative. If zero, the function returns #FX_TRUE
+     *                    non-negative. If zero, the function returns #1
      *                    with no data transmitted.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the data was successfully queued or
-     *                  transmitted to the specified channel. Returns #FX_FALSE
+     * @return int Returns #1 if the data was successfully queued or
+     *                  transmitted to the specified channel. Returns #0
      *                  if the operation failed due to invalid parameters,
      *                  channel not available, buffer overflow, hardware error,
      *                  or other system errors.
@@ -379,27 +379,27 @@ extern "C"
      *          behavior. Some channels may have size limitations; sending data
      *          exceeding internal buffers may result in truncation or failure.
      *
-     * @post If the function returns #FX_TRUE, the data has been accepted for
+     * @post If the function returns #1, the data has been accepted for
      *       transmission (though transmission may not be complete). If it returns
-     *       #FX_FALSE, no data was transmitted.
+     *       #0, no data was transmitted.
      *
      * @see FX_L0_Arm0_Terminal_ClearData(), FX_L0_Arm0_Terminal_GetData()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Terminal_SetData(FX_INT32 channel_type, FX_UCHAR *data_ptr, FX_INT32 data_len);
+    CONTROL_SDK_API int FX_L0_Arm0_Terminal_SetData(int channel_type, unsigned char *data_ptr, int data_len);
     /**
      * @brief Clears all data received from the Arm1 terminal.
      *
      * This function clears the content received from the Arm1 terminal device,
      * resetting it to a blank state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the terminal data was successfully
-     *                  cleared. Returns #FX_FALSE if the operation failed due
+     * @return int Returns #1 if the terminal data was successfully
+     *                  cleared. Returns #0 if the operation failed due
      *                  to hardware errors, invalid terminal state, or other
      *                  system errors.
      *
      * @see FX_L0_Arm1_Terminal_GetData(), FX_L0_Arm1_Terminal_SetData()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Terminal_ClearData(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm1_Terminal_ClearData(void);
     /**
      * @brief Retrieves data from the Arm1 terminal input channel.
      *
@@ -420,7 +420,7 @@ extern "C"
      *                     is stored as raw bytes and may not be null-terminated.
      *                     This parameter must not be NULL.
      *
-     * @return FX_INT32 The number of bytes actually read and stored in data_ptr.
+     * @return int The number of bytes actually read and stored in data_ptr.
      *                  Returns 0 if no data is currently available.
      *
      * @post If the return value is positive, channel_type_ptr contains the
@@ -429,7 +429,7 @@ extern "C"
      *
      * @see FX_L0_Arm1_Terminal_ClearData(), FX_L0_Arm1_Terminal_SetData()
      */
-    CONTROL_SDK_API FX_INT32 FX_L0_Arm1_Terminal_GetData(FX_INT32 *channel_type_ptr, FX_UCHAR data_ptr[256]);
+    CONTROL_SDK_API int FX_L0_Arm1_Terminal_GetData(int *channel_type_ptr, unsigned char data_ptr[64]);
     /**
      * @brief Sends data to the Arm1 terminal output channel.
      *
@@ -446,11 +446,11 @@ extern "C"
      *                    The data may contain text, binary data, or control
      *                    sequences. The pointer must not be NULL.
      * @param[in] data_len The number of bytes to send from data_ptr. Must be
-     *                    non-negative. If zero, the function returns #FX_TRUE
+     *                    non-negative. If zero, the function returns #1
      *                    with no data transmitted.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the data was successfully queued or
-     *                  transmitted to the specified channel. Returns #FX_FALSE
+     * @return int Returns #1 if the data was successfully queued or
+     *                  transmitted to the specified channel. Returns #0
      *                  if the operation failed due to invalid parameters,
      *                  channel not available, buffer overflow, hardware error,
      *                  or other system errors.
@@ -460,13 +460,13 @@ extern "C"
      *          behavior. Some channels may have size limitations; sending data
      *          exceeding internal buffers may result in truncation or failure.
      *
-     * @post If the function returns #FX_TRUE, the data has been accepted for
+     * @post If the function returns #1, the data has been accepted for
      *       transmission (though transmission may not be complete). If it returns
-     *       #FX_FALSE, no data was transmitted.
+     *       #0, no data was transmitted.
      *
      * @see FX_L0_Arm1_Terminal_ClearData(), FX_L0_Arm1_Terminal_GetData()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Terminal_SetData(FX_INT32 channel_type, FX_UCHAR *data_ptr, FX_INT32 data_len);
+    CONTROL_SDK_API int FX_L0_Arm1_Terminal_SetData(int channel_type, unsigned char *data_ptr, int data_len);
     /**
      * @brief Gets the error code for a specific servo axis on Arm0.
      *
@@ -479,20 +479,20 @@ extern "C"
      *                   is implementation-dependent (typically 0 to 6 for
      *                   7 axes). Refer to hardware documentation for specific
      *                   axis numbering.
-     * @param[out] error_code Pointer to an FX_INT32 variable that will receive
+     * @param[out] error_code Pointer to an int variable that will receive
      *                       the error code. The pointer must not be NULL.
      *                       Error code values are system-specific; common values
      *                       include 0 (no error), positive numbers for errors.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the error code was successfully
-     *                  retrieved. Returns #FX_FALSE if the operation failed
+     * @return int Returns #1 if the error code was successfully
+     *                  retrieved. Returns #0 if the operation failed
      *                  due to invalid axis_id, communication error.
      *
-     * @post If the function returns #FX_TRUE, *error_code contains the current
+     * @post If the function returns #1, *error_code contains the current
      *       servo error code for the specified axis. If the function returns
-     *       #FX_FALSE, the content of *error_code is unchanged.
+     *       #0, the content of *error_code is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code);
+    CONTROL_SDK_API int FX_L0_Arm0_State_GetServoErrorCode(int axis_id, int *error_code);
     /**
      * @brief Gets the error code for a specific servo axis on Arm1.
      *
@@ -505,20 +505,20 @@ extern "C"
      *                   is implementation-dependent (typically 0 to 6 for
      *                   7 axes). Refer to hardware documentation for specific
      *                   axis numbering.
-     * @param[out] error_code Pointer to an FX_INT32 variable that will receive
+     * @param[out] error_code Pointer to an int variable that will receive
      *                       the error code. The pointer must not be NULL.
      *                       Error code values are system-specific; common values
      *                       include 0 (no error), positive numbers for errors.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the error code was successfully
-     *                  retrieved. Returns #FX_FALSE if the operation failed
+     * @return int Returns #1 if the error code was successfully
+     *                  retrieved. Returns #0 if the operation failed
      *                  due to invalid axis_id, communication error.
      *
-     * @post If the function returns #FX_TRUE, *error_code contains the current
+     * @post If the function returns #1, *error_code contains the current
      *       servo error code for the specified axis. If the function returns
-     *       #FX_FALSE, the content of *error_code is unchanged.
+     *       #0, the content of *error_code is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code);
+    CONTROL_SDK_API int FX_L0_Arm1_State_GetServoErrorCode(int axis_id, int *error_code);
     /**
      * @brief Gets the error code for a specific servo axis on Head.
      *
@@ -531,20 +531,20 @@ extern "C"
      *                   is implementation-dependent (typically 0 to 2 for
      *                   3 axes). Refer to hardware documentation for specific
      *                   axis numbering.
-     * @param[out] error_code Pointer to an FX_INT32 variable that will receive
+     * @param[out] error_code Pointer to an int variable that will receive
      *                       the error code. The pointer must not be NULL.
      *                       Error code values are system-specific; common values
      *                       include 0 (no error), positive numbers for errors.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the error code was successfully
-     *                  retrieved. Returns #FX_FALSE if the operation failed
+     * @return int Returns #1 if the error code was successfully
+     *                  retrieved. Returns #0 if the operation failed
      *                  due to invalid axis_id, communication error.
      *
-     * @post If the function returns #FX_TRUE, *error_code contains the current
+     * @post If the function returns #1, *error_code contains the current
      *       servo error code for the specified axis. If the function returns
-     *       #FX_FALSE, the content of *error_code is unchanged.
+     *       #0, the content of *error_code is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code);
+    CONTROL_SDK_API int FX_L0_Head_State_GetServoErrorCode(int axis_id, int *error_code);
     /**
      * @brief Gets the error code for a specific servo axis on Body.
      *
@@ -557,20 +557,20 @@ extern "C"
      *                   is implementation-dependent (typically 0 to 5 for
      *                   6 axes). Refer to hardware documentation for specific
      *                   axis numbering.
-     * @param[out] error_code Pointer to an FX_INT32 variable that will receive
+     * @param[out] error_code Pointer to an int variable that will receive
      *                       the error code. The pointer must not be NULL.
      *                       Error code values are system-specific; common values
      *                       include 0 (no error), positive numbers for errors.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the error code was successfully
-     *                  retrieved. Returns #FX_FALSE if the operation failed
+     * @return int Returns #1 if the error code was successfully
+     *                  retrieved. Returns #0 if the operation failed
      *                  due to invalid axis_id, communication error.
      *
-     * @post If the function returns #FX_TRUE, *error_code contains the current
+     * @post If the function returns #1, *error_code contains the current
      *       servo error code for the specified axis. If the function returns
-     *       #FX_FALSE, the content of *error_code is unchanged.
+     *       #0, the content of *error_code is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code);
+    CONTROL_SDK_API int FX_L0_Body_State_GetServoErrorCode(int axis_id, int *error_code);
     /**
      * @brief Gets the error code for a specific servo axis on Lift.
      *
@@ -583,28 +583,28 @@ extern "C"
      *                   is implementation-dependent (typically 0 to 1 for
      *                   2 axes). Refer to hardware documentation for specific
      *                   axis numbering.
-     * @param[out] error_code Pointer to an FX_INT32 variable that will receive
+     * @param[out] error_code Pointer to an int variable that will receive
      *                       the error code. The pointer must not be NULL.
      *                       Error code values are system-specific; common values
      *                       include 0 (no error), positive numbers for errors.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the error code was successfully
-     *                  retrieved. Returns #FX_FALSE if the operation failed
+     * @return int Returns #1 if the error code was successfully
+     *                  retrieved. Returns #0 if the operation failed
      *                  due to invalid axis_id, communication error.
      *
-     * @post If the function returns #FX_TRUE, *error_code contains the current
+     * @post If the function returns #1, *error_code contains the current
      *       servo error code for the specified axis. If the function returns
-     *       #FX_FALSE, the content of *error_code is unchanged.
+     *       #0, the content of *error_code is unchanged.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code);
+    CONTROL_SDK_API int FX_L0_Lift_State_GetServoErrorCode(int axis_id, int *error_code);
     /**
      * @brief Clear error of all Arm0 components and transfer Arm0 to IDLE state.
      *
      * This function performs a soft reset of the Arm0 subsystem, clearing
      * all Arm0 servos errros and transfering Arm0 to IDLE state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Arm0 state was successfully reset.
-     *                  Returns #FX_FALSE if the reset operation failed due to
+     * @return int Returns #1 if the Arm0 state was successfully reset.
+     *                  Returns #0 if the reset operation failed due to
      *                  hardware errors, critical faults, or because Arm0 is
      *                  currently in an unrecoverable state.
      *
@@ -619,46 +619,15 @@ extern "C"
      * @pre Arm0 should be in a state where a reset is safe. Any critical
      *      operations should be completed or suspended before calling.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_State_Reset(FX_VOID);
-    /**
-     * @brief Immediately stops all motion and activates emergency stop for Arm0.
-     *
-     * This function triggers an emergency stop (E-stop) condition for the Arm0
-     * robotic system. It immediately halts all servo movements, disables motors,
-     * and applies brakes (if available) to bring Arm0 to a complete stop as
-     * quickly as possible. This function should be used in critical safety
-     * situations to prevent damage or injury.
-     *
-     * @return FX_BOOL Returns #FX_TRUE if the emergency stop was successfully
-     *                  activated. Returns #FX_FALSE if the emergency stop
-     *                  failed to activate due to hardware faults, communication
-     *                  errors, or because Arm0 is already in an emergency stop
-     *                  state.
-     *
-     * @note Once activated, the emergency stop condition typically requires
-     *       manual intervention to reset. After calling this function, the
-     *       system may need to be explicitly reset or re-enabled before normal
-     *       operation can resume.
-     *
-     * @warning This function causes abrupt stopping which may cause mechanical
-     *          stress, positioning errors, or dropped payloads. Use only in
-     *          genuine emergency situations. Do not use for normal stopping
-     *          procedures.
-     *
-     * @pre None. This function can be called at any time, even during motion.
-     *
-     * @post Arm0 is in emergency stop state: motors are disabled, brakes are
-     *       engaged (if available), and Arm0 will go to ERROR state.
-     */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_State_EmergencyStop(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm0_State_Reset(void);
     /**
      * @brief Clear error of all Arm1 components and transfer Arm1 to IDLE state.
      *
      * This function performs a soft reset of the Arm1 subsystem, clearing
      * all Arm1 servos errros and transfering Arm0 to IDLE state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Arm0 state was successfully reset.
-     *                  Returns #FX_FALSE if the reset operation failed due to
+     * @return int Returns #1 if the Arm0 state was successfully reset.
+     *                  Returns #0 if the reset operation failed due to
      *                  hardware errors, critical faults, or because Arm0 is
      *                  currently in an unrecoverable state.
      *
@@ -673,46 +642,15 @@ extern "C"
      * @pre Arm1 should be in a state where a reset is safe. Any critical
      *      operations should be completed or suspended before calling.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_State_Reset(FX_VOID);
-    /**
-     * @brief Immediately stops all motion and activates emergency stop for Arm1.
-     *
-     * This function triggers an emergency stop (E-stop) condition for the Arm1
-     * robotic system. It immediately halts all servo movements, disables motors,
-     * and applies brakes (if available) to bring Arm1 to a complete stop as
-     * quickly as possible. This function should be used in critical safety
-     * situations to prevent damage or injury.
-     *
-     * @return FX_BOOL Returns #FX_TRUE if the emergency stop was successfully
-     *                  activated. Returns #FX_FALSE if the emergency stop
-     *                  failed to activate due to hardware faults, communication
-     *                  errors, or because Arm1 is already in an emergency stop
-     *                  state.
-     *
-     * @note Once activated, the emergency stop condition typically requires
-     *       manual intervention to reset. After calling this function, the
-     *       system may need to be explicitly reset or re-enabled before normal
-     *       operation can resume.
-     *
-     * @warning This function causes abrupt stopping which may cause mechanical
-     *          stress, positioning errors, or dropped payloads. Use only in
-     *          genuine emergency situations. Do not use for normal stopping
-     *          procedures.
-     *
-     * @pre None. This function can be called at any time, even during motion.
-     *
-     * @post Arm1 is in emergency stop state: motors are disabled, brakes are
-     *       engaged (if available), and Arm1 will go to ERROR state.
-     */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_State_EmergencyStop(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm1_State_Reset(void);
     /**
      * @brief Clear error of all Head components and transfer Head to IDLE state.
      *
      * This function performs a soft reset of the Head subsystem, clearing
      * all Head servos errros and transfering Head to IDLE state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Head state was successfully reset.
-     *                  Returns #FX_FALSE if the reset operation failed due to
+     * @return int Returns #1 if the Head state was successfully reset.
+     *                  Returns #0 if the reset operation failed due to
      *                  hardware errors, critical faults, or because Head is
      *                  currently in an unrecoverable state.
      *
@@ -727,46 +665,15 @@ extern "C"
      * @pre Head should be in a state where a reset is safe. Any critical
      *      operations should be completed or suspended before calling.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_State_Reset(FX_VOID);
-    /**
-     * @brief Immediately stops all motion and activates emergency stop for Head.
-     *
-     * This function triggers an emergency stop (E-stop) condition for the Head
-     * robotic system. It immediately halts all servo movements, disables motors,
-     * and applies brakes (if available) to bring Head to a complete stop as
-     * quickly as possible. This function should be used in critical safety
-     * situations to prevent damage or injury.
-     *
-     * @return FX_BOOL Returns #FX_TRUE if the emergency stop was successfully
-     *                  activated. Returns #FX_FALSE if the emergency stop
-     *                  failed to activate due to hardware faults, communication
-     *                  errors, or because Head is already in an emergency stop
-     *                  state.
-     *
-     * @note Once activated, the emergency stop condition typically requires
-     *       manual intervention to reset. After calling this function, the
-     *       system may need to be explicitly reset or re-enabled before normal
-     *       operation can resume.
-     *
-     * @warning This function causes abrupt stopping which may cause mechanical
-     *          stress, positioning errors, or dropped payloads. Use only in
-     *          genuine emergency situations. Do not use for normal stopping
-     *          procedures.
-     *
-     * @pre None. This function can be called at any time, even during motion.
-     *
-     * @post Head is in emergency stop state: motors are disabled, brakes are
-     *       engaged (if available), and Head will go to ERROR state.
-     */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_State_EmergencyStop(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Head_State_Reset(void);
     /**
      * @brief Clear error of all Body components and transfer Body to IDLE state.
      *
      * This function performs a soft reset of the Body subsystem, clearing
      * all Body servos errros and transfering Body to IDLE state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Body state was successfully reset.
-     *                  Returns #FX_FALSE if the reset operation failed due to
+     * @return int Returns #1 if the Body state was successfully reset.
+     *                  Returns #0 if the reset operation failed due to
      *                  hardware errors, critical faults, or because Body is
      *                  currently in an unrecoverable state.
      *
@@ -781,46 +688,15 @@ extern "C"
      * @pre Body should be in a state where a reset is safe. Any critical
      *      operations should be completed or suspended before calling.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_State_Reset(FX_VOID);
-    /**
-     * @brief Immediately stops all motion and activates emergency stop for Body.
-     *
-     * This function triggers an emergency stop (E-stop) condition for the Body
-     * robotic system. It immediately halts all servo movements, disables motors,
-     * and applies brakes (if available) to bring Body to a complete stop as
-     * quickly as possible. This function should be used in critical safety
-     * situations to prevent damage or injury.
-     *
-     * @return FX_BOOL Returns #FX_TRUE if the emergency stop was successfully
-     *                  activated. Returns #FX_FALSE if the emergency stop
-     *                  failed to activate due to hardware faults, communication
-     *                  errors, or because Body is already in an emergency stop
-     *                  state.
-     *
-     * @note Once activated, the emergency stop condition typically requires
-     *       manual intervention to reset. After calling this function, the
-     *       system may need to be explicitly reset or re-enabled before normal
-     *       operation can resume.
-     *
-     * @warning This function causes abrupt stopping which may cause mechanical
-     *          stress, positioning errors, or dropped payloads. Use only in
-     *          genuine emergency situations. Do not use for normal stopping
-     *          procedures.
-     *
-     * @pre None. This function can be called at any time, even during motion.
-     *
-     * @post Body is in emergency stop state: motors are disabled, brakes are
-     *       engaged (if available), and Body will go to ERROR state.
-     */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_State_EmergencyStop(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Body_State_Reset(void);
     /**
      * @brief Clear error of all Lift components and transfer Lift to IDLE state.
      *
      * This function performs a soft reset of the Lift subsystem, clearing
      * all Lift servos errros and transfering Lift to IDLE state.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Lift state was successfully reset.
-     *                  Returns #FX_FALSE if the reset operation failed due to
+     * @return int Returns #1 if the Lift state was successfully reset.
+     *                  Returns #0 if the reset operation failed due to
      *                  hardware errors, critical faults, or because Lift is
      *                  currently in an unrecoverable state.
      *
@@ -835,38 +711,7 @@ extern "C"
      * @pre Lift should be in a state where a reset is safe. Any critical
      *      operations should be completed or suspended before calling.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_State_Reset(FX_VOID);
-    /**
-     * @brief Immediately stops all motion and activates emergency stop for Lift.
-     *
-     * This function triggers an emergency stop (E-stop) condition for the Lift
-     * robotic system. It immediately halts all servo movements, disables motors,
-     * and applies brakes (if available) to bring Lift to a complete stop as
-     * quickly as possible. This function should be used in critical safety
-     * situations to prevent damage or injury.
-     *
-     * @return FX_BOOL Returns #FX_TRUE if the emergency stop was successfully
-     *                  activated. Returns #FX_FALSE if the emergency stop
-     *                  failed to activate due to hardware faults, communication
-     *                  errors, or because Lift is already in an emergency stop
-     *                  state.
-     *
-     * @note Once activated, the emergency stop condition typically requires
-     *       manual intervention to reset. After calling this function, the
-     *       system may need to be explicitly reset or re-enabled before normal
-     *       operation can resume.
-     *
-     * @warning This function causes abrupt stopping which may cause mechanical
-     *          stress, positioning errors, or dropped payloads. Use only in
-     *          genuine emergency situations. Do not use for normal stopping
-     *          procedures.
-     *
-     * @pre None. This function can be called at any time, even during motion.
-     *
-     * @post Lift is in emergency stop state: motors are disabled, brakes are
-     *       engaged (if available), and Lift will go to ERROR state.
-     */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_State_EmergencyStop(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Lift_State_Reset(void);
     /**
      * @brief Locks the brakes on specified axes of Arm0.
      *
@@ -882,8 +727,8 @@ extern "C"
      *                      Example: 0x05 (binary 00000101) locks brakes
      *                      on axes 0 and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake lock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake lock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -896,7 +741,7 @@ extern "C"
      *
      * @see FX_L0_Arm0_Config_SetBrakeUnlock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_SetBrakeLock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_SetBrakeLock(unsigned char axis_mask);
     /**
      * @brief Unlocks (releases) the brakes on specified axes of Arm0.
      *
@@ -911,8 +756,8 @@ extern "C"
      *                      Example: 0x0A (binary 00001010) unlocks brakes
      *                      on axes 1 and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake unlock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake unlock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -930,7 +775,7 @@ extern "C"
      *
      * @see FX_L0_Arm0_Config_SetBrakeLock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_SetBrakeUnlock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_SetBrakeUnlock(unsigned char axis_mask);
     /**
      * @brief Resets the encoder offset for specified axes of Arm0.
      *
@@ -946,8 +791,8 @@ extern "C"
      *                      Example: 0x07 (binary 00000111) resets offsets
      *                      on axes 0, 1, and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the encoder offset reset was successful
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the encoder offset reset was successful
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is currently moving or in a fault state.
@@ -968,7 +813,7 @@ extern "C"
      *       making the current position the new reference. All subsequent
      *       position readings and commands will be relative to this new zero.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_ResetEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_ResetEncOffset(unsigned char axis_mask);
     /**
      * @brief Clears encoder errors for specified axes of Arm0.
      *
@@ -984,8 +829,8 @@ extern "C"
      *                      Example: 0x0F (binary 00001111) clears errors
      *                      on axes 0, 1, 2, and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if encoder errors were successfully
-     *                  cleared for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if encoder errors were successfully
+     *                  cleared for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to
      *                  invalid axis_mask, communication errors, or persistent
      *                  hardware faults that cannot be cleared.
@@ -1004,7 +849,7 @@ extern "C"
      *       if the underlying issue is resolved. Position tracking may
      *       be lost and require re-homing.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_ClearEncError(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_ClearEncError(unsigned char axis_mask);
     /**
      * @brief Resets the external encoder offset for specified axes of the Arm0 module.
      *
@@ -1021,8 +866,8 @@ extern "C"
      *                      Example: 0x03 (binary 00000011) resets external encoder
      *                      offsets on axes 0 and 1 of the Arm0 module.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the external encoder offset reset was
-     *                  successful for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if the external encoder offset reset was
+     *                  successful for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, the axis doesn't have
      *                  an external encoder, or because the axis is in a fault state.
@@ -1040,7 +885,7 @@ extern "C"
      *      axes should be stationary. The system should be in a calibration
      *      or maintenance mode.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_ResetExtEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_ResetExtEncOffset(unsigned char axis_mask);
     /**
      * @brief Disables the software position limits for specified axes of Arm0.
      *
@@ -1057,8 +902,8 @@ extern "C"
      *                      Example: 0x1F (binary 00011111) disables soft limits
      *                      on axes 0, 1, 2, 3, and 4.
      *
-     * @return FX_BOOL Returns #FX_TRUE if soft limits were successfully disabled
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if soft limits were successfully disabled
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is in a state that prevents limit disabling
@@ -1082,7 +927,7 @@ extern "C"
      *       The axes can now move beyond their normal limits until soft
      *       limits are re-enabled or the system is reset.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_DisableSoftLimit(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_DisableSoftLimit(unsigned char axis_mask);
     /**
      * @brief Sets the sensor offset for a specific axis of Arm0.
      *
@@ -1100,8 +945,8 @@ extern "C"
      *                   negative values shift downward. The exact unit depends on
      *                   the sensor type (e.g., encoder counts, resolver bits).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the sensor offset was successfully set.
-     *                  Returns #FX_FALSE if the operation failed due to invalid
+     * @return int Returns #1 if the sensor offset was successfully set.
+     *                  Returns #0 if the operation failed due to invalid
      *                  axis_id, communication error, the sensor doesn't support
      *                  offset adjustment, or the offset value is out of range.
      *
@@ -1121,7 +966,7 @@ extern "C"
      *       will have the offset applied. The offset is typically stored
      *       persistently and will be used after system restart.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset);
+    CONTROL_SDK_API int FX_L0_Arm0_Config_SetSensorOffset(int axis_id, int offset);
     /**
      * @brief Locks the brakes on specified axes of Arm1.
      *
@@ -1137,8 +982,8 @@ extern "C"
      *                      Example: 0x05 (binary 00000101) locks brakes
      *                      on axes 0 and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake lock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake lock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -1151,7 +996,7 @@ extern "C"
      *
      * @see FX_L0_Arm1_Config_SetBrakeUnlock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_SetBrakeLock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_SetBrakeLock(unsigned char axis_mask);
     /**
      * @brief Unlocks (releases) the brakes on specified axes of Arm1.
      *
@@ -1166,8 +1011,8 @@ extern "C"
      *                      Example: 0x0A (binary 00001010) unlocks brakes
      *                      on axes 1 and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake unlock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake unlock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -1185,7 +1030,7 @@ extern "C"
      *
      * @see FX_L0_Arm1_Config_SetBrakeLock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_SetBrakeUnlock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_SetBrakeUnlock(unsigned char axis_mask);
     /**
      * @brief Resets the encoder offset for specified axes of Arm1.
      *
@@ -1201,8 +1046,8 @@ extern "C"
      *                      Example: 0x07 (binary 00000111) resets offsets
      *                      on axes 0, 1, and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the encoder offset reset was successful
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the encoder offset reset was successful
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is currently moving or in a fault state.
@@ -1223,7 +1068,7 @@ extern "C"
      *       making the current position the new reference. All subsequent
      *       position readings and commands will be relative to this new zero.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_ResetEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_ResetEncOffset(unsigned char axis_mask);
     /**
      * @brief Clears encoder errors for specified axes of Arm1.
      *
@@ -1239,8 +1084,8 @@ extern "C"
      *                      Example: 0x0F (binary 00001111) clears errors
      *                      on axes 0, 1, 2, and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if encoder errors were successfully
-     *                  cleared for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if encoder errors were successfully
+     *                  cleared for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to
      *                  invalid axis_mask, communication errors, or persistent
      *                  hardware faults that cannot be cleared.
@@ -1259,7 +1104,7 @@ extern "C"
      *       if the underlying issue is resolved. Position tracking may
      *       be lost and require re-homing.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_ClearEncError(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_ClearEncError(unsigned char axis_mask);
     /**
      * @brief Resets the external encoder offset for specified axes of the Arm1 module.
      *
@@ -1276,8 +1121,8 @@ extern "C"
      *                      Example: 0x03 (binary 00000011) resets external encoder
      *                      offsets on axes 0 and 1 of the Arm1 module.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the external encoder offset reset was
-     *                  successful for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if the external encoder offset reset was
+     *                  successful for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, the axis doesn't have
      *                  an external encoder, or because the axis is in a fault state.
@@ -1295,7 +1140,7 @@ extern "C"
      *      axes should be stationary. The system should be in a calibration
      *      or maintenance mode.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_ResetExtEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_ResetExtEncOffset(unsigned char axis_mask);
     /**
      * @brief Disables the software position limits for specified axes of Arm1.
      *
@@ -1312,8 +1157,8 @@ extern "C"
      *                      Example: 0x1F (binary 00011111) disables soft limits
      *                      on axes 0, 1, 2, 3, and 4.
      *
-     * @return FX_BOOL Returns #FX_TRUE if soft limits were successfully disabled
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if soft limits were successfully disabled
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is in a state that prevents limit disabling
@@ -1337,7 +1182,7 @@ extern "C"
      *       The axes can now move beyond their normal limits until soft
      *       limits are re-enabled or the system is reset.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_DisableSoftLimit(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_DisableSoftLimit(unsigned char axis_mask);
     /**
      * @brief Sets the sensor offset for a specific axis of Arm1.
      *
@@ -1355,8 +1200,8 @@ extern "C"
      *                   negative values shift downward. The exact unit depends on
      *                   the sensor type (e.g., encoder counts, resolver bits).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the sensor offset was successfully set.
-     *                  Returns #FX_FALSE if the operation failed due to invalid
+     * @return int Returns #1 if the sensor offset was successfully set.
+     *                  Returns #0 if the operation failed due to invalid
      *                  axis_id, communication error, the sensor doesn't support
      *                  offset adjustment, or the offset value is out of range.
      *
@@ -1376,7 +1221,7 @@ extern "C"
      *       will have the offset applied. The offset is typically stored
      *       persistently and will be used after system restart.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset);
+    CONTROL_SDK_API int FX_L0_Arm1_Config_SetSensorOffset(int axis_id, int offset);
     /**
      * @brief Locks the brakes on specified axes of Head.
      *
@@ -1392,8 +1237,8 @@ extern "C"
      *                      Example: 0x05 (binary 00000101) locks brakes
      *                      on axes 0 and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake lock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake lock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -1406,7 +1251,7 @@ extern "C"
      *
      * @see FX_L0_Head_Config_SetBrakeUnlock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Config_SetBrakeLock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Head_Config_SetBrakeLock(unsigned char axis_mask);
     /**
      * @brief Unlocks (releases) the brakes on specified axes of Head.
      *
@@ -1421,8 +1266,8 @@ extern "C"
      *                      Example: 0x0A (binary 00001010) unlocks brakes
      *                      on axes 1 and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake unlock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake unlock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -1440,7 +1285,7 @@ extern "C"
      *
      * @see FX_L0_Head_Config_SetBrakeLock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Config_SetBrakeUnlock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Head_Config_SetBrakeUnlock(unsigned char axis_mask);
     /**
      * @brief Resets the encoder offset for specified axes of Head.
      *
@@ -1456,8 +1301,8 @@ extern "C"
      *                      Example: 0x07 (binary 00000111) resets offsets
      *                      on axes 0, 1, and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the encoder offset reset was successful
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the encoder offset reset was successful
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is currently moving or in a fault state.
@@ -1478,7 +1323,7 @@ extern "C"
      *       making the current position the new reference. All subsequent
      *       position readings and commands will be relative to this new zero.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Config_ResetEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Head_Config_ResetEncOffset(unsigned char axis_mask);
     /**
      * @brief Clears encoder errors for specified axes of Head.
      *
@@ -1494,8 +1339,8 @@ extern "C"
      *                      Example: 0x0F (binary 00001111) clears errors
      *                      on axes 0, 1, 2, and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if encoder errors were successfully
-     *                  cleared for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if encoder errors were successfully
+     *                  cleared for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to
      *                  invalid axis_mask, communication errors, or persistent
      *                  hardware faults that cannot be cleared.
@@ -1514,7 +1359,7 @@ extern "C"
      *       if the underlying issue is resolved. Position tracking may
      *       be lost and require re-homing.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Config_ClearEncError(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Head_Config_ClearEncError(unsigned char axis_mask);
     /**
      * @brief Resets the external encoder offset for specified axes of the Head module.
      *
@@ -1531,8 +1376,8 @@ extern "C"
      *                      Example: 0x03 (binary 00000011) resets external encoder
      *                      offsets on axes 0 and 1 of the Head module.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the external encoder offset reset was
-     *                  successful for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if the external encoder offset reset was
+     *                  successful for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, the axis doesn't have
      *                  an external encoder, or because the axis is in a fault state.
@@ -1550,7 +1395,7 @@ extern "C"
      *      axes should be stationary. The system should be in a calibration
      *      or maintenance mode.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Config_ResetExtEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Head_Config_ResetExtEncOffset(unsigned char axis_mask);
     /**
      * @brief Disables the software position limits for specified axes of Head.
      *
@@ -1567,8 +1412,8 @@ extern "C"
      *                      Example: 0x1F (binary 00011111) disables soft limits
      *                      on axes 0, 1, 2, 3, and 4.
      *
-     * @return FX_BOOL Returns #FX_TRUE if soft limits were successfully disabled
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if soft limits were successfully disabled
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is in a state that prevents limit disabling
@@ -1592,7 +1437,7 @@ extern "C"
      *       The axes can now move beyond their normal limits until soft
      *       limits are re-enabled or the system is reset.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Config_DisableSoftLimit(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Head_Config_DisableSoftLimit(unsigned char axis_mask);
     /**
      * @brief Locks the brakes on specified axes of Body.
      *
@@ -1608,8 +1453,8 @@ extern "C"
      *                      Example: 0x05 (binary 00000101) locks brakes
      *                      on axes 0 and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake lock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake lock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -1622,7 +1467,7 @@ extern "C"
      *
      * @see FX_L0_Body_Config_SetBrakeUnlock()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_SetBrakeLock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Body_Config_SetBrakeLock(unsigned char axis_mask);
     /**
      * @brief Unlocks (releases) the brakes on specified axes of Body.
      *
@@ -1637,8 +1482,8 @@ extern "C"
      *                      Example: 0x0A (binary 00001010) unlocks brakes
      *                      on axes 1 and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the brake unlock command was successfully
-     *                  sent to all specified axes. Returns #FX_FALSE if the
+     * @return int Returns #1 if the brake unlock command was successfully
+     *                  sent to all specified axes. Returns #0 if the
      *                  operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, hardware faults.
      *
@@ -1657,7 +1502,7 @@ extern "C"
      * @see FX_L0_Body_Config_SetBrakeLock()
      */
 
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_SetBrakeUnlock(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Body_Config_SetBrakeUnlock(unsigned char axis_mask);
     /**
      * @brief Resets the encoder offset for specified axes of Body.
      *
@@ -1673,8 +1518,8 @@ extern "C"
      *                      Example: 0x07 (binary 00000111) resets offsets
      *                      on axes 0, 1, and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the encoder offset reset was successful
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the encoder offset reset was successful
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is currently moving or in a fault state.
@@ -1696,7 +1541,7 @@ extern "C"
      *       position readings and commands will be relative to this new zero.
      */
 
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_ResetEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Body_Config_ResetEncOffset(unsigned char axis_mask);
     /**
      * @brief Clears encoder errors for specified axes of Body.
      *
@@ -1712,8 +1557,8 @@ extern "C"
      *                      Example: 0x0F (binary 00001111) clears errors
      *                      on axes 0, 1, 2, and 3.
      *
-     * @return FX_BOOL Returns #FX_TRUE if encoder errors were successfully
-     *                  cleared for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if encoder errors were successfully
+     *                  cleared for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to
      *                  invalid axis_mask, communication errors, or persistent
      *                  hardware faults that cannot be cleared.
@@ -1732,7 +1577,7 @@ extern "C"
      *       if the underlying issue is resolved. Position tracking may
      *       be lost and require re-homing.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_ClearEncError(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Body_Config_ClearEncError(unsigned char axis_mask);
     /**
      * @brief Resets the external encoder offset for specified axes of the Body module.
      *
@@ -1749,8 +1594,8 @@ extern "C"
      *                      Example: 0x03 (binary 00000011) resets external encoder
      *                      offsets on axes 0 and 1 of the Body module.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the external encoder offset reset was
-     *                  successful for all specified axes. Returns #FX_FALSE if
+     * @return int Returns #1 if the external encoder offset reset was
+     *                  successful for all specified axes. Returns #0 if
      *                  the operation failed on one or more axes due to invalid
      *                  axis_mask, communication errors, the axis doesn't have
      *                  an external encoder, or because the axis is in a fault state.
@@ -1768,7 +1613,7 @@ extern "C"
      *      axes should be stationary. The system should be in a calibration
      *      or maintenance mode.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_ResetExtEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Body_Config_ResetExtEncOffset(unsigned char axis_mask);
     /**
      * @brief Disables the software position limits for specified axes of Body.
      *
@@ -1785,8 +1630,8 @@ extern "C"
      *                      Example: 0x1F (binary 00011111) disables soft limits
      *                      on axes 0, 1, 2, 3, and 4.
      *
-     * @return FX_BOOL Returns #FX_TRUE if soft limits were successfully disabled
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if soft limits were successfully disabled
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is in a state that prevents limit disabling
@@ -1810,7 +1655,7 @@ extern "C"
      *       The axes can now move beyond their normal limits until soft
      *       limits are re-enabled or the system is reset.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_DisableSoftLimit(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Body_Config_DisableSoftLimit(unsigned char axis_mask);
     /**
      * @brief Sets the sensor offset for a specific axis of Body.
      *
@@ -1828,8 +1673,8 @@ extern "C"
      *                   negative values shift downward. The exact unit depends on
      *                   the sensor type (e.g., encoder counts, resolver bits).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the sensor offset was successfully set.
-     *                  Returns #FX_FALSE if the operation failed due to invalid
+     * @return int Returns #1 if the sensor offset was successfully set.
+     *                  Returns #0 if the operation failed due to invalid
      *                  axis_id, communication error, the sensor doesn't support
      *                  offset adjustment, or the offset value is out of range.
      *
@@ -1849,7 +1694,7 @@ extern "C"
      *       will have the offset applied. The offset is typically stored
      *       persistently and will be used after system restart.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset);
+    CONTROL_SDK_API int FX_L0_Body_Config_SetSensorOffset(int axis_id, int offset);
     /**
      * @brief Resets the encoder offset for specified axes of Lift.
      *
@@ -1865,8 +1710,8 @@ extern "C"
      *                      Example: 0x07 (binary 00000111) resets offsets
      *                      on axes 0, 1, and 2.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the encoder offset reset was successful
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the encoder offset reset was successful
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is currently moving or in a fault state.
@@ -1887,7 +1732,7 @@ extern "C"
      *       making the current position the new reference. All subsequent
      *       position readings and commands will be relative to this new zero.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Config_ResetEncOffset(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Lift_Config_ResetEncOffset(unsigned char axis_mask);
     /**
      * @brief Disables the software position limits for specified axes of Lift.
      *
@@ -1904,8 +1749,8 @@ extern "C"
      *                      Example: 0x1F (binary 00011111) disables soft limits
      *                      on axes 0, 1, 2, 3, and 4.
      *
-     * @return FX_BOOL Returns #FX_TRUE if soft limits were successfully disabled
-     *                  for all specified axes. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if soft limits were successfully disabled
+     *                  for all specified axes. Returns #0 if the operation
      *                  failed on one or more axes due to invalid axis_mask,
      *                  communication errors, hardware faults, or because the
      *                  axis is in a state that prevents limit disabling
@@ -1929,7 +1774,38 @@ extern "C"
      *       The axes can now move beyond their normal limits until soft
      *       limits are re-enabled or the system is reset.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Config_DisableSoftLimit(FX_UINT8 axis_mask);
+    CONTROL_SDK_API int FX_L0_Lift_Config_DisableSoftLimit(unsigned char axis_mask);
+    /**
+     * @brief Immediately stops all motion and activates emergency stop for Arm0.
+     *
+     * This function triggers an emergency stop (E-stop) condition for the Arm0
+     * robotic system. It immediately halts all servo movements, disables motors,
+     * and applies brakes (if available) to bring Arm0 to a complete stop as
+     * quickly as possible. This function should be used in critical safety
+     * situations to prevent damage or injury.
+     *
+     * @return int Returns #1 if the emergency stop was successfully
+     *                  activated. Returns #0 if the emergency stop
+     *                  failed to activate due to hardware faults, communication
+     *                  errors, or because Arm0 is already in an emergency stop
+     *                  state.
+     *
+     * @note Once activated, the emergency stop condition typically requires
+     *       manual intervention to reset. After calling this function, the
+     *       system may need to be explicitly reset or re-enabled before normal
+     *       operation can resume.
+     *
+     * @warning This function causes abrupt stopping which may cause mechanical
+     *          stress, positioning errors, or dropped payloads. Use only in
+     *          genuine emergency situations. Do not use for normal stopping
+     *          procedures.
+     *
+     * @pre None. This function can be called at any time, even during motion.
+     *
+     * @post Arm0 is in emergency stop state: motors are disabled, brakes are
+     *       engaged (if available), and Arm0 will go to ERROR state.
+     */
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_EmergencyStop(void);
     /**
      * @brief Sets the runtime state of the Arm0.
      *
@@ -1944,8 +1820,8 @@ extern "C"
      *                  - ARM_STATE_TORQUE: Arm is in torque control mode with all force compensations
      *                  - ARM_STATE_RELEASE: Arm is in torque control mode with only gravity compensation
      *
-     * @return FX_BOOL Returns #FX_TRUE if the state transition was successful.
-     *                  Returns #FX_FALSE if the state transition failed due to
+     * @return int Returns #1 if the state transition was successful.
+     *                  Returns #0 if the state transition failed due to
      *                  invalid target state, current state prevents transition,
      *                  hardware errors, or safety constraints.
      *
@@ -1957,7 +1833,7 @@ extern "C"
      *       corresponding behavior changes. State-dependent functions
      *       will behave according to the new state.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetState(FX_INT32 state);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetState(int state);
     /**
      * @brief Sets the joint position command for Arm0.
      *
@@ -1969,15 +1845,15 @@ extern "C"
      * @param[in] joint_pos Array of 7 joint position values (FX_DOUBLE) in
      *                     degrees.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint position command was
+     * @return int Returns #1 if the joint position command was
      *                  successfully accepted and queued for execution.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @post If successful, Arm0 begins moving to the specified joint positions.
      *       The motion occurs asynchronously; the function returns before
      *       motion is complete.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[7]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetJointPosCmd(double joint_pos[7]);
     /**
      * @brief Sets the joint torque command for Arm0.
      *
@@ -1985,12 +1861,12 @@ extern "C"
      * The arm will apply the specified torques to each joint motor. This is
      * typically used for force control applications.
      *
-     * @param[in] joint_tor Array of 7 joint torque values (FX_DOUBLE) in
+     * @param[in] joint_tor Array of 7 joint torque values (double) in
      *                     Newton-meters (Nm).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint torque command was
+     * @return int Returns #1 if the joint torque command was
      *                  successfully accepted and sent to the joint controllers.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @note This function is for direct torque control, which is an advanced
      *       feature requiring proper configuration. The arm must typically be
@@ -2002,7 +1878,7 @@ extern "C"
      *       The torques are applied continuously until new torque commands
      *       are sent or the control mode is changed.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetJointTorCmd(FX_DOUBLE joint_tor[7]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetJointTorCmd(double joint_tor[7]);
     /**
      * @brief Sets the force control parameters for Arm0 to apply a certain force in some direction.
      *
@@ -2011,7 +1887,7 @@ extern "C"
      * the arm to apply or regulate forces in Cartesian space,
      * typically used for assembly, polishing, or contact operations.
      *
-     * @param[in] force_ctrl Array of 5 force control parameters (FX_DOUBLE).
+     * @param[in] force_ctrl Array of 5 force control parameters (double).
      *                      The parameters typically specify:
      *                      - force_ctrl[0]: Direction of force in X direction under the arm base coordinate
      *                      - force_ctrl[1]: Direction of force in Y direction under the arm base coordinate
@@ -2019,8 +1895,8 @@ extern "C"
      *                      - force_ctrl[3]: Magnitude of force (N)
      *                      - force_ctrl[4]: Maximum move distance along the force (mm)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the force control parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the force control parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Force control can apply significant forces. Incorrect parameters
@@ -2036,7 +1912,7 @@ extern "C"
      *       forces/torques at the end-effector. The control is typically
      *       continuous until new parameters are set or control mode changes.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetForceCtrl(FX_DOUBLE force_ctrl[5]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetForceCtrl(double force_ctrl[5]);
     /**
      * @brief Sets the force control parameters for Arm0 to apply a certain torque in some direction.
      *
@@ -2045,7 +1921,7 @@ extern "C"
      * the arm to apply or regulate torques in Cartesian space,
      * typically used for assembly, polishing, or contact operations.
      *
-     * @param[in] torque_ctrl Array of 5 torque control parameters (FX_DOUBLE).
+     * @param[in] torque_ctrl Array of 5 torque control parameters (double).
      *                      The parameters typically specify:
      *                      - torque_ctrl[0]: Direction of torque in X direction under the arm base coordinate
      *                      - torque_ctrl[1]: Direction of torque in Y direction under the arm base coordinate
@@ -2053,8 +1929,8 @@ extern "C"
      *                      - torque_ctrl[3]: Magnitude of torque (Nm)
      *                      - torque_ctrl[4]: Maximum rotate angles along the torque (rad)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the torque control parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the torque control parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Torque control can apply significant torque. Incorrect parameters
@@ -2070,7 +1946,7 @@ extern "C"
      *       forces/torques at the end-effector. The control is typically
      *       continuous until new parameters are set or control mode changes.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetTorqueCtrl(FX_DOUBLE torque_ctrl[5]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetTorqueCtrl(double torque_ctrl[5]);
     /**
      * @brief Sets the velocity ratio (override) for Arm0.
      *
@@ -2084,12 +1960,12 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed speed).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the velocity ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the velocity ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The velocity ratio affects all subsequent motion commands dynamically.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetVelRatio(double vel_ratio);
     /**
      * @brief Sets the acceleration ratio (override) for Arm0.
      *
@@ -2103,14 +1979,14 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed acceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the acceleration ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the acceleration ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The acceleration ratio affects all subsequent motion commands until
      *       changed. Lower ratios result in smoother, more gradual motions
      *       which may be desirable for delicate operations or payload stability.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetAccRatio(FX_DOUBLE acc_ratio);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetAccRatio(double acc_ratio);
     /**
      * @brief Sets the joint stiffness (K) gains for Arm0.
      *
@@ -2120,11 +1996,11 @@ extern "C"
      * against external forces. Higher K values make joints stiffer; lower
      * values make them more compliant.
      *
-     * @param[in] k Array of 7 joint stiffness values (FX_DOUBLE) in appropriate
+     * @param[in] k Array of 7 joint stiffness values (double) in appropriate
      *             units (typically Nm/rad).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint stiffness parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the joint stiffness parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive stiffness can cause high current draw, mechanical
@@ -2136,7 +2012,7 @@ extern "C"
      *       for subsequent control cycles. The effect is immediate for
      *       impedance control.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetJointK(FX_DOUBLE k[7]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetJointK(double k[7]);
     /**
      * @brief Sets the joint damping (D) gains for Arm0.
      *
@@ -2146,11 +2022,11 @@ extern "C"
      * suppress oscillations and vibrations. Higher D values increase
      * damping; lower values reduce it.
      *
-     * @param[in] d Array of 7 joint damping values (FX_DOUBLE) in appropriate
+     * @param[in] d Array of 7 joint damping values (double) in appropriate
      *             units (typically Nm·s/rad).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint damping parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the joint damping parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive damping can cause sluggish response, high current
@@ -2163,7 +2039,7 @@ extern "C"
      *       impedance control; for position control, it affects the
      *       derivative gain of the position loop.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetJointD(FX_DOUBLE d[7]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetJointD(double d[7]);
     /**
      * @brief Sets the Cartesian stiffness (K) gains for Arm0.
      *
@@ -2174,7 +2050,7 @@ extern "C"
      * against external forces. Higher K values make the end-effector stiffer;
      * lower values make it more compliant.
      *
-     * @param[in] k Array of 7 Cartesian stiffness values (FX_DOUBLE) in appropriate
+     * @param[in] k Array of 7 Cartesian stiffness values (double) in appropriate
      *             units (typically N/Deg for linear, Nm/Deg for rotational).
      *             The array elements typically correspond to:
      *             - k[0]: X-direction translational stiffness(N/mm)
@@ -2185,8 +2061,8 @@ extern "C"
      *             - k[5]: Z-axis rotational stiffness(Nm/rad)
      *             - k[6]: Zero space stiffness(Nm/rad)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Cartesian stiffness parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the Cartesian stiffness parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive Cartesian stiffness can cause high joint torques,
@@ -2199,7 +2075,7 @@ extern "C"
      *       stiffness will vary with arm configuration according to the
      *       Jacobian transpose transformation.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetCartK(FX_DOUBLE k[7]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetCartK(double k[7]);
     /**
      * @brief Sets the Cartesian damping (D) gains for Arm0.
      *
@@ -2210,7 +2086,7 @@ extern "C"
      * and vibrations at the end-effector. Higher D values increase damping;
      * lower values reduce it.
      *
-     * @param[in] d Array of 7 Cartesian damping values (FX_DOUBLE) in appropriate
+     * @param[in] d Array of 7 Cartesian damping values (double) in appropriate
      *             units (typically N·s/m for linear, Nm·s/rad for rotational, or
      *             system-specific units). The array elements typically correspond to:
      *             - d[0]: X-direction translational damping (N·s/mm)
@@ -2221,8 +2097,8 @@ extern "C"
      *             - d[5]: Z-axis rotational damping (Nm·s/rad)
      *             - d[6]: Zero space damping (Nm·s/rad)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Cartesian damping parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the Cartesian damping parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive Cartesian damping can cause sluggish response and
@@ -2236,7 +2112,7 @@ extern "C"
      *       damping will vary with arm configuration according to the
      *       Jacobian transpose transformation.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetCartD(FX_DOUBLE d[7]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetCartD(double d[7]);
     /**
      * @brief Sets the tool offset in the tool frame for Arm0.
      *
@@ -2246,7 +2122,7 @@ extern "C"
      * frame is located relative to the robot's flange, affecting all
      * subsequent Cartesian commands and measurements.
      *
-     * @param[in] k Array of 6 tool offset values (FX_DOUBLE) representing
+     * @param[in] k Array of 6 tool offset values (double) representing
      *             the transformation from flange frame to tool frame.
      *             The array elements are:
      *             - k[0]: X-axis translation offset (mm)
@@ -2256,10 +2132,10 @@ extern "C"
      *             - k[4]: Rotation about Y-axis (Deg)
      *             - k[5]: Rotation about Z-axis (Deg)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the tool offset was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the tool offset was successfully
+     *                  set. Returns #0 if the operation failed.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetToolK(FX_DOUBLE k[6]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetToolK(double k[6]);
     /**
      * @brief Sets the tool dynamics parameters for Arm0.
      *
@@ -2269,7 +2145,7 @@ extern "C"
      * performance. The tool dynamics are essential for applications
      * requiring precise force control or when using tools with significant mass.
      *
-     * @param[in] d Array of 10 tool dynamics parameters (FX_DOUBLE) that
+     * @param[in] d Array of 10 tool dynamics parameters (double) that
      *             describe the tool's mass, center of mass, and inertia tensor.
      *             The array elements are:
      *             - d[0]: Tool mass (kilograms)
@@ -2284,8 +2160,8 @@ extern "C"
      *             - d[9]: Inertia tensor ZZ component (kg·m²)
      *             The inertia tensor is defined relative to the center of mass.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the tool dynamics parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the tool dynamics parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Incorrect dynamics parameters can cause:
@@ -2299,7 +2175,7 @@ extern "C"
      *       tool parameters for all subsequent control cycles. This affects
      *       gravity compensation, model-based control, and feedforward terms.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetToolD(FX_DOUBLE d[10]);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetToolD(double d[10]);
     /**
      * @brief Sets the impedance control type for Arm0.
      *
@@ -2316,14 +2192,14 @@ extern "C"
      *                    - 2: Cartesian space impedance control
      *                    - 3: Force control
      *
-     * @return FX_BOOL Returns #FX_TRUE if the impedance type was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the impedance type was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @post If successful, Arm0 uses the specified impedance type for all
      *       subsequent control cycles. This affects the dynamic response
      *       to both commanded motions and external forces.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetImpType(FX_INT32 imp_type);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetImpType(int imp_type);
     /**
      * @brief Sets the drag teaching (hand guiding) mode type for Arm0.
      *
@@ -2343,15 +2219,15 @@ extern "C"
      *                     - 4: Cartesian space drag teaching in Z direction under arm base coordinate
      *                     - 5: Cartesian space drag teaching in rotation relative to TCP
      *
-     * @return FX_BOOL Returns #FX_TRUE if the drag type was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the drag type was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @post If successful, Arm0 enters the specified drag teaching mode.
      *       The robot becomes responsive to external forces according to
      *       the selected drag type. Motors may be powered but controlled
      *       to allow movement.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetDragType(FX_INT32 drag_type);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetDragType(int drag_type);
     /**
      * @brief Initializes a trajectory for Arm0 with the specified number of points.
      *
@@ -2366,9 +2242,9 @@ extern "C"
      *                     number of points that can be added to the trajectory
      *                     before execution. Range is typically 5 to 5000.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
+     * @return int Returns #1 if the trajectory was successfully
      *                  initialized with the specified number of points.
-     *                  Returns #FX_FALSE if the operation failed.
+     *                  Returns #0 if the operation failed.
      *
      * @note Initializing a trajectory does not start execution. After
      *       initialization, points must be added using functions like
@@ -2385,7 +2261,7 @@ extern "C"
      * @see FX_L0_Arm0_Runtime_SetTraj(), FX_L0_Arm0_Runtime_RunTraj(),
      *      FX_L0_Arm0_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_InitTraj(FX_INT32 point_num);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_InitTraj(int point_num);
     /**
      * @brief Sets a block of trajectory points for Arm0.
      *
@@ -2409,14 +2285,14 @@ extern "C"
      *                      {point0_data0, point0_data1, ..., point0_data6,
      *                       point1_data0, point1_data1, ..., point1_data6, ...}
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory points were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the trajectory points were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @see FX_L0_Arm0_Runtime_InitTraj(), FX_L0_Arm0_Runtime_RunTraj(),
      *      FX_L0_Arm0_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_SetTraj(FX_INT32 serial, FX_INT32 point_num, FX_DOUBLE *point_data);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_SetTraj(int serial, int point_num, double *point_data);
     /**
      * @brief Starts execution of the loaded trajectory for Arm0.
      *
@@ -2426,8 +2302,8 @@ extern "C"
      * defined in the trajectory data. Execution continues until all points
      * are completed, the trajectory is stopped, or an error occurs.
      *
-     * @return FX_BOOL Returns #FX_TRUE if trajectory execution was successfully
-     *                  started. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if trajectory execution was successfully
+     *                  started. Returns #0 if the operation failed.
      *
      * @note Trajectory execution is typically asynchronous; this function
      *       returns immediately after starting execution. The trajectory can be
@@ -2444,7 +2320,7 @@ extern "C"
      * @see FX_L0_Arm0_Runtime_InitTraj(), FX_L0_Arm0_Runtime_SetTraj(),
      *      FX_L0_Arm0_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_RunTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_RunTraj(void);
     /**
      * @brief Stops execution of the currently running trajectory for Arm0.
      *
@@ -2455,8 +2331,8 @@ extern "C"
      * and the arm remains at its current position (or the position
      * reached after deceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
-     *                  stopped. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the trajectory was successfully
+     *                  stopped. Returns #0 if the operation failed.
      *
      * @post If successful, trajectory execution is terminated. The arm
      *       comes to a complete stop.
@@ -2464,7 +2340,38 @@ extern "C"
      * @see FX_L0_Arm0_Runtime_InitTraj(), FX_L0_Arm0_Runtime_SetTraj(),
      *      FX_L0_Arm0_Runtime_RunTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm0_Runtime_StopTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm0_Runtime_StopTraj(void);
+    /**
+     * @brief Immediately stops all motion and activates emergency stop for Arm1.
+     *
+     * This function triggers an emergency stop (E-stop) condition for the Arm1
+     * robotic system. It immediately halts all servo movements, disables motors,
+     * and applies brakes (if available) to bring Arm1 to a complete stop as
+     * quickly as possible. This function should be used in critical safety
+     * situations to prevent damage or injury.
+     *
+     * @return int Returns #1 if the emergency stop was successfully
+     *                  activated. Returns #0 if the emergency stop
+     *                  failed to activate due to hardware faults, communication
+     *                  errors, or because Arm1 is already in an emergency stop
+     *                  state.
+     *
+     * @note Once activated, the emergency stop condition typically requires
+     *       manual intervention to reset. After calling this function, the
+     *       system may need to be explicitly reset or re-enabled before normal
+     *       operation can resume.
+     *
+     * @warning This function causes abrupt stopping which may cause mechanical
+     *          stress, positioning errors, or dropped payloads. Use only in
+     *          genuine emergency situations. Do not use for normal stopping
+     *          procedures.
+     *
+     * @pre None. This function can be called at any time, even during motion.
+     *
+     * @post Arm1 is in emergency stop state: motors are disabled, brakes are
+     *       engaged (if available), and Arm1 will go to ERROR state.
+     */
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_EmergencyStop(void);
     /**
      * @brief Sets the runtime state of the Arm1.
      *
@@ -2479,8 +2386,8 @@ extern "C"
      *                  - ARM_STATE_TORQUE: Arm is in torque control mode with all force compensations
      *                  - ARM_STATE_RELEASE: Arm is in torque control mode with only gravity compensation
      *
-     * @return FX_BOOL Returns #FX_TRUE if the state transition was successful.
-     *                  Returns #FX_FALSE if the state transition failed due to
+     * @return int Returns #1 if the state transition was successful.
+     *                  Returns #0 if the state transition failed due to
      *                  invalid target state, current state prevents transition,
      *                  hardware errors, or safety constraints.
      *
@@ -2492,7 +2399,7 @@ extern "C"
      *       corresponding behavior changes. State-dependent functions
      *       will behave according to the new state.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetState(FX_INT32 state);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetState(int state);
     /**
      * @brief Sets the joint position command for Arm1.
      *
@@ -2501,18 +2408,18 @@ extern "C"
      * 7 joints of Arm1. The arm will move to these positions using the
      * currently configured motion settings.
      *
-     * @param[in] joint_pos Array of 7 joint position values (FX_DOUBLE) in
+     * @param[in] joint_pos Array of 7 joint position values (double) in
      *                     degrees.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint position command was
+     * @return int Returns #1 if the joint position command was
      *                  successfully accepted and queued for execution.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @post If successful, Arm1 begins moving to the specified joint positions.
      *       The motion occurs asynchronously; the function returns before
      *       motion is complete.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[7]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetJointPosCmd(double joint_pos[7]);
     /**
      * @brief Sets the joint torque command for Arm1.
      *
@@ -2520,12 +2427,12 @@ extern "C"
      * The arm will apply the specified torques to each joint motor. This is
      * typically used for force control applications.
      *
-     * @param[in] joint_tor Array of 7 joint torque values (FX_DOUBLE) in
+     * @param[in] joint_tor Array of 7 joint torque values (double) in
      *                     Newton-meters (Nm).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint torque command was
+     * @return int Returns #1 if the joint torque command was
      *                  successfully accepted and sent to the joint controllers.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @note This function is for direct torque control, which is an advanced
      *       feature requiring proper configuration. The arm must typically be
@@ -2537,7 +2444,7 @@ extern "C"
      *       The torques are applied continuously until new torque commands
      *       are sent or the control mode is changed.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetJointTorCmd(FX_DOUBLE joint_tor[7]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetJointTorCmd(double joint_tor[7]);
     /**
      * @brief Sets the force control parameters for Arm1 to apply a certain force in some direction.
      *
@@ -2546,7 +2453,7 @@ extern "C"
      * the arm to apply or regulate forces in Cartesian space,
      * typically used for assembly, polishing, or contact operations.
      *
-     * @param[in] force_ctrl Array of 5 force control parameters (FX_DOUBLE).
+     * @param[in] force_ctrl Array of 5 force control parameters (double).
      *                      The parameters typically specify:
      *                      - force_ctrl[0]: Direction of force in X direction under the arm base coordinate
      *                      - force_ctrl[1]: Direction of force in Y direction under the arm base coordinate
@@ -2554,8 +2461,8 @@ extern "C"
      *                      - force_ctrl[3]: Magnitude of force (N)
      *                      - force_ctrl[4]: Maximum move distance along the force (mm)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the force control parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the force control parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Force control can apply significant forces. Incorrect parameters
@@ -2571,7 +2478,7 @@ extern "C"
      *       forces/torques at the end-effector. The control is typically
      *       continuous until new parameters are set or control mode changes.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetForceCtrl(FX_DOUBLE force_ctrl[5]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetForceCtrl(double force_ctrl[5]);
     /**
      * @brief Sets the force control parameters for Arm1 to apply a certain torque in some direction.
      *
@@ -2580,7 +2487,7 @@ extern "C"
      * the arm to apply or regulate torques in Cartesian space,
      * typically used for assembly, polishing, or contact operations.
      *
-     * @param[in] torque_ctrl Array of 5 torque control parameters (FX_DOUBLE).
+     * @param[in] torque_ctrl Array of 5 torque control parameters (double).
      *                      The parameters typically specify:
      *                      - torque_ctrl[0]: Direction of torque in X direction under the arm base coordinate
      *                      - torque_ctrl[1]: Direction of torque in Y direction under the arm base coordinate
@@ -2588,8 +2495,8 @@ extern "C"
      *                      - torque_ctrl[3]: Magnitude of torque (N)
      *                      - torque_ctrl[4]: Maximum rotate angles along the force (rad)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the torque control parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the torque control parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Torque control can apply significant torque. Incorrect parameters
@@ -2605,7 +2512,7 @@ extern "C"
      *       forces/torques at the end-effector. The control is typically
      *       continuous until new parameters are set or control mode changes.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetTorqueCtrl(FX_DOUBLE torque_ctrl[5]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetTorqueCtrl(double torque_ctrl[5]);
     /**
      * @brief Sets the velocity ratio (override) for Arm1.
      *
@@ -2619,12 +2526,12 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed speed).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the velocity ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the velocity ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The velocity ratio affects all subsequent motion commands dynamically.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetVelRatio(double vel_ratio);
     /**
      * @brief Sets the acceleration ratio (override) for Arm1.
      *
@@ -2638,14 +2545,14 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed acceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the acceleration ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the acceleration ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The acceleration ratio affects all subsequent motion commands until
      *       changed. Lower ratios result in smoother, more gradual motions
      *       which may be desirable for delicate operations or payload stability.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetAccRatio(FX_DOUBLE acc_ratio);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetAccRatio(double acc_ratio);
     /**
      * @brief Sets the joint stiffness (K) gains for Arm1.
      *
@@ -2655,11 +2562,11 @@ extern "C"
      * against external forces. Higher K values make joints stiffer; lower
      * values make them more compliant.
      *
-     * @param[in] k Array of 7 joint stiffness values (FX_DOUBLE) in appropriate
+     * @param[in] k Array of 7 joint stiffness values (double) in appropriate
      *             units (typically Nm/rad).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint stiffness parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the joint stiffness parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive stiffness can cause high current draw, mechanical
@@ -2671,7 +2578,7 @@ extern "C"
      *       for subsequent control cycles. The effect is immediate for
      *       impedance control.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetJointK(FX_DOUBLE k[7]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetJointK(double k[7]);
     /**
      * @brief Sets the joint damping (D) gains for Arm1.
      *
@@ -2681,11 +2588,11 @@ extern "C"
      * suppress oscillations and vibrations. Higher D values increase
      * damping; lower values reduce it.
      *
-     * @param[in] d Array of 7 joint damping values (FX_DOUBLE) in appropriate
+     * @param[in] d Array of 7 joint damping values (double) in appropriate
      *             units (typically Nm·s/rad).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint damping parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the joint damping parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive damping can cause sluggish response, high current
@@ -2698,7 +2605,7 @@ extern "C"
      *       impedance control; for position control, it affects the
      *       derivative gain of the position loop.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetJointD(FX_DOUBLE d[7]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetJointD(double d[7]);
     /**
      * @brief Sets the Cartesian stiffness (K) gains for Arm1.
      *
@@ -2709,7 +2616,7 @@ extern "C"
      * against external forces. Higher K values make the end-effector stiffer;
      * lower values make it more compliant.
      *
-     * @param[in] k Array of 7 Cartesian stiffness values (FX_DOUBLE) in appropriate
+     * @param[in] k Array of 7 Cartesian stiffness values (double) in appropriate
      *             units (typically N/Deg for linear, Nm/Deg for rotational).
      *             The array elements typically correspond to:
      *             - k[0]: X-direction translational stiffness(N/mm)
@@ -2720,8 +2627,8 @@ extern "C"
      *             - k[5]: Z-axis rotational stiffness(N*m/rad)
      *             - k[6]: Zero space stiffness(N*m/rad)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Cartesian stiffness parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the Cartesian stiffness parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive Cartesian stiffness can cause high joint torques,
@@ -2734,7 +2641,7 @@ extern "C"
      *       stiffness will vary with arm configuration according to the
      *       Jacobian transpose transformation.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetCartK(FX_DOUBLE k[7]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetCartK(double k[7]);
     /**
      * @brief Sets the Cartesian damping (D) gains for Arm1.
      *
@@ -2745,7 +2652,7 @@ extern "C"
      * and vibrations at the end-effector. Higher D values increase damping;
      * lower values reduce it.
      *
-     * @param[in] d Array of 7 Cartesian damping values (FX_DOUBLE) in appropriate
+     * @param[in] d Array of 7 Cartesian damping values (double) in appropriate
      *             units (typically N·s/m for linear, Nm·s/rad for rotational, or
      *             system-specific units). The array elements typically correspond to:
      *             - d[0]: X-direction translational damping (N·s/mm)
@@ -2756,8 +2663,8 @@ extern "C"
      *             - d[5]: Z-axis rotational damping (Nm·s/rad)
      *             - d[6]: Zero space damping (Nm·s/rad)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the Cartesian damping parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the Cartesian damping parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive Cartesian damping can cause sluggish response and
@@ -2771,7 +2678,7 @@ extern "C"
      *       damping will vary with arm configuration according to the
      *       Jacobian transpose transformation.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetCartD(FX_DOUBLE d[7]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetCartD(double d[7]);
     /**
      * @brief Sets the tool offset in the tool frame for Arm1.
      *
@@ -2781,7 +2688,7 @@ extern "C"
      * frame is located relative to the robot's flange, affecting all
      * subsequent Cartesian commands and measurements.
      *
-     * @param[in] k Array of 6 tool offset values (FX_DOUBLE) representing
+     * @param[in] k Array of 6 tool offset values (double) representing
      *             the transformation from flange frame to tool frame.
      *             The array elements are:
      *             - k[0]: X-axis translation offset (mm)
@@ -2791,10 +2698,10 @@ extern "C"
      *             - k[4]: Rotation about Y-axis (Deg)
      *             - k[5]: Rotation about Z-axis (Deg)
      *
-     * @return FX_BOOL Returns #FX_TRUE if the tool offset was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the tool offset was successfully
+     *                  set. Returns #0 if the operation failed.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetToolK(FX_DOUBLE k[6]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetToolK(double k[6]);
     /**
      * @brief Sets the tool dynamics parameters for Arm1.
      *
@@ -2804,7 +2711,7 @@ extern "C"
      * performance. The tool dynamics are essential for applications
      * requiring precise force control or when using tools with significant mass.
      *
-     * @param[in] d Array of 10 tool dynamics parameters (FX_DOUBLE) that
+     * @param[in] d Array of 10 tool dynamics parameters (double) that
      *             describe the tool's mass, center of mass, and inertia tensor.
      *             The array elements are:
      *             - d[0]: Tool mass (kilograms)
@@ -2819,8 +2726,8 @@ extern "C"
      *             - d[9]: Inertia tensor ZZ component (kg·m²)
      *             The inertia tensor is defined relative to the center of mass.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the tool dynamics parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the tool dynamics parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Incorrect dynamics parameters can cause:
@@ -2834,7 +2741,7 @@ extern "C"
      *       tool parameters for all subsequent control cycles. This affects
      *       gravity compensation, model-based control, and feedforward terms.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetToolD(FX_DOUBLE d[10]);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetToolD(double d[10]);
     /**
      * @brief Sets the impedance control type for Arm1.
      *
@@ -2851,14 +2758,14 @@ extern "C"
      *                    - 2: Cartesian space impedance control
      *                    - 3: Force control
      *
-     * @return FX_BOOL Returns #FX_TRUE if the impedance type was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the impedance type was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @post If successful, Arm1 uses the specified impedance type for all
      *       subsequent control cycles. This affects the dynamic response
      *       to both commanded motions and external forces.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetImpType(FX_INT32 imp_type);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetImpType(int imp_type);
     /**
      * @brief Sets the drag teaching (hand guiding) mode type for Arm1.
      *
@@ -2878,15 +2785,15 @@ extern "C"
      *                     - 4: Cartesian space drag teaching in Z direction under arm base coordinate
      *                     - 5: Cartesian space drag teaching in rotation relative to TCP
      *
-     * @return FX_BOOL Returns #FX_TRUE if the drag type was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the drag type was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @post If successful, Arm1 enters the specified drag teaching mode.
      *       The robot becomes responsive to external forces according to
      *       the selected drag type. Motors may be powered but controlled
      *       to allow movement.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetDragType(FX_INT32 drag_type);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetDragType(int drag_type);
     /**
      * @brief Initializes a trajectory for Arm1 with the specified number of points.
      *
@@ -2901,9 +2808,9 @@ extern "C"
      *                     number of points that can be added to the trajectory
      *                     before execution. Range is typically 5 to 5000.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
+     * @return int Returns #1 if the trajectory was successfully
      *                  initialized with the specified number of points.
-     *                  Returns #FX_FALSE if the operation failed.
+     *                  Returns #0 if the operation failed.
      *
      * @note Initializing a trajectory does not start execution. After
      *       initialization, points must be added using functions like
@@ -2920,7 +2827,7 @@ extern "C"
      * @see FX_L0_Arm1_Runtime_SetTraj(), FX_L0_Arm1_Runtime_RunTraj(),
      *      FX_L0_Arm1_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_InitTraj(FX_INT32 point_num);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_InitTraj(int point_num);
     /**
      * @brief Sets a block of trajectory points for Arm1.
      *
@@ -2944,14 +2851,14 @@ extern "C"
      *                      {point0_data0, point0_data1, ..., point0_data6,
      *                       point1_data0, point1_data1, ..., point1_data6, ...}
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory points were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the trajectory points were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @see FX_L0_Arm1_Runtime_InitTraj(), FX_L0_Arm1_Runtime_RunTraj(),
      *      FX_L0_Arm1_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_SetTraj(FX_INT32 serial, FX_INT32 point_num, FX_DOUBLE *point_data);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_SetTraj(int serial, int point_num, double *point_data);
     /**
      * @brief Starts execution of the loaded trajectory for Arm1.
      *
@@ -2961,8 +2868,8 @@ extern "C"
      * defined in the trajectory data. Execution continues until all points
      * are completed, the trajectory is stopped, or an error occurs.
      *
-     * @return FX_BOOL Returns #FX_TRUE if trajectory execution was successfully
-     *                  started. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if trajectory execution was successfully
+     *                  started. Returns #0 if the operation failed.
      *
      * @note Trajectory execution is typically asynchronous; this function
      *       returns immediately after starting execution. The trajectory can be
@@ -2979,7 +2886,7 @@ extern "C"
      * @see FX_L0_Arm1_Runtime_InitTraj(), FX_L0_Arm1_Runtime_SetTraj(),
      *      FX_L0_Arm1_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_RunTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_RunTraj(void);
     /**
      * @brief Stops execution of the currently running trajectory for Arm1.
      *
@@ -2990,8 +2897,8 @@ extern "C"
      * and the arm remains at its current position (or the position
      * reached after deceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
-     *                  stopped. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the trajectory was successfully
+     *                  stopped. Returns #0 if the operation failed.
      *
      * @post If successful, trajectory execution is terminated. The arm
      *       comes to a complete stop.
@@ -2999,7 +2906,38 @@ extern "C"
      * @see FX_L0_Arm1_Runtime_InitTraj(), FX_L0_Arm1_Runtime_SetTraj(),
      *      FX_L0_Arm1_Runtime_RunTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Arm1_Runtime_StopTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Arm1_Runtime_StopTraj(void);
+    /**
+     * @brief Immediately stops all motion and activates emergency stop for Head.
+     *
+     * This function triggers an emergency stop (E-stop) condition for the Head
+     * robotic system. It immediately halts all servo movements, disables motors,
+     * and applies brakes (if available) to bring Head to a complete stop as
+     * quickly as possible. This function should be used in critical safety
+     * situations to prevent damage or injury.
+     *
+     * @return int Returns #1 if the emergency stop was successfully
+     *                  activated. Returns #0 if the emergency stop
+     *                  failed to activate due to hardware faults, communication
+     *                  errors, or because Head is already in an emergency stop
+     *                  state.
+     *
+     * @note Once activated, the emergency stop condition typically requires
+     *       manual intervention to reset. After calling this function, the
+     *       system may need to be explicitly reset or re-enabled before normal
+     *       operation can resume.
+     *
+     * @warning This function causes abrupt stopping which may cause mechanical
+     *          stress, positioning errors, or dropped payloads. Use only in
+     *          genuine emergency situations. Do not use for normal stopping
+     *          procedures.
+     *
+     * @pre None. This function can be called at any time, even during motion.
+     *
+     * @post Head is in emergency stop state: motors are disabled, brakes are
+     *       engaged (if available), and Head will go to ERROR state.
+     */
+    CONTROL_SDK_API int FX_L0_Head_Runtime_EmergencyStop(void);
     /**
      * @brief Sets the runtime state of the Head.
      *
@@ -3012,8 +2950,8 @@ extern "C"
      *                  - HEAD_STATE_IDLE: Head is disabled
      *                  - HEAD_STATE_POSITION: Head is in position control mode
      *
-     * @return FX_BOOL Returns #FX_TRUE if the state transition was successful.
-     *                  Returns #FX_FALSE if the state transition failed due to
+     * @return int Returns #1 if the state transition was successful.
+     *                  Returns #0 if the state transition failed due to
      *                  invalid target state, current state prevents transition,
      *                  hardware errors, or safety constraints.
      *
@@ -3025,7 +2963,7 @@ extern "C"
      *       corresponding behavior changes. State-dependent functions
      *       will behave according to the new state.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Runtime_SetState(FX_INT32 state);
+    CONTROL_SDK_API int FX_L0_Head_Runtime_SetState(int state);
     /**
      * @brief Sets the joint position command for Head.
      *
@@ -3034,18 +2972,18 @@ extern "C"
      * 3 joints of Head. The arm will move to these positions using the
      * currently configured motion settings.
      *
-     * @param[in] joint_pos Array of 3 joint position values (FX_DOUBLE) in
+     * @param[in] joint_pos Array of 3 joint position values (double) in
      *                     degrees.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint position command was
+     * @return int Returns #1 if the joint position command was
      *                  successfully accepted and queued for execution.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @post If successful, Head begins moving to the specified joint positions.
      *       The motion occurs asynchronously; the function returns before
      *       motion is complete.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[3]);
+    CONTROL_SDK_API int FX_L0_Head_Runtime_SetJointPosCmd(double joint_pos[3]);
     /**
      * @brief Sets the velocity ratio (override) for Head.
      *
@@ -3059,12 +2997,12 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed speed).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the velocity ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the velocity ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The velocity ratio affects all subsequent motion commands dynamically.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
+    CONTROL_SDK_API int FX_L0_Head_Runtime_SetVelRatio(double vel_ratio);
     /**
      * @brief Sets the acceleration ratio (override) for Head.
      *
@@ -3078,14 +3016,45 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed acceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the acceleration ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the acceleration ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The acceleration ratio affects all subsequent motion commands until
      *       changed. Lower ratios result in smoother, more gradual motions
      *       which may be desirable for delicate operations or payload stability.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Head_Runtime_SetAccRatio(FX_DOUBLE acc_ratio);
+    CONTROL_SDK_API int FX_L0_Head_Runtime_SetAccRatio(double acc_ratio);
+    /**
+     * @brief Immediately stops all motion and activates emergency stop for Body.
+     *
+     * This function triggers an emergency stop (E-stop) condition for the Body
+     * robotic system. It immediately halts all servo movements, disables motors,
+     * and applies brakes (if available) to bring Body to a complete stop as
+     * quickly as possible. This function should be used in critical safety
+     * situations to prevent damage or injury.
+     *
+     * @return int Returns #1 if the emergency stop was successfully
+     *                  activated. Returns #0 if the emergency stop
+     *                  failed to activate due to hardware faults, communication
+     *                  errors, or because Body is already in an emergency stop
+     *                  state.
+     *
+     * @note Once activated, the emergency stop condition typically requires
+     *       manual intervention to reset. After calling this function, the
+     *       system may need to be explicitly reset or re-enabled before normal
+     *       operation can resume.
+     *
+     * @warning This function causes abrupt stopping which may cause mechanical
+     *          stress, positioning errors, or dropped payloads. Use only in
+     *          genuine emergency situations. Do not use for normal stopping
+     *          procedures.
+     *
+     * @pre None. This function can be called at any time, even during motion.
+     *
+     * @post Body is in emergency stop state: motors are disabled, brakes are
+     *       engaged (if available), and Body will go to ERROR state.
+     */
+    CONTROL_SDK_API int FX_L0_Body_Runtime_EmergencyStop(void);
     /**
      * @brief Sets the runtime state of the Body.
      *
@@ -3100,8 +3069,8 @@ extern "C"
      *                  - BODY_STATE_TORQUE: Body is in torque control mode with all force compensations
      *                  - BODY_STATE_RELEASE: Body is in torque control mode with only gravity compensation
      *
-     * @return FX_BOOL Returns #FX_TRUE if the state transition was successful.
-     *                  Returns #FX_FALSE if the state transition failed due to
+     * @return int Returns #1 if the state transition was successful.
+     *                  Returns #0 if the state transition failed due to
      *                  invalid target state, current state prevents transition,
      *                  hardware errors, or safety constraints.
      *
@@ -3113,7 +3082,7 @@ extern "C"
      *       corresponding behavior changes. State-dependent functions
      *       will behave according to the new state.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetState(FX_INT32 state);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetState(int state);
     /**
      * @brief Sets the joint position command for Body.
      *
@@ -3122,18 +3091,18 @@ extern "C"
      * 6 joints of Body. The arm will move to these positions using the
      * currently configured motion settings.
      *
-     * @param[in] joint_pos Array of 6 joint position values (FX_DOUBLE) in
+     * @param[in] joint_pos Array of 6 joint position values (double) in
      *                     degrees.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint position command was
+     * @return int Returns #1 if the joint position command was
      *                  successfully accepted and queued for execution.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @post If successful, Body begins moving to the specified joint positions.
      *       The motion occurs asynchronously; the function returns before
      *       motion is complete.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[6]);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetJointPosCmd(double joint_pos[6]);
     /**
      * @brief Sets the velocity ratio (override) for Body.
      *
@@ -3147,12 +3116,12 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed speed).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the velocity ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the velocity ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The velocity ratio affects all subsequent motion commands dynamically.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetVelRatio(double vel_ratio);
     /**
      * @brief Sets the acceleration ratio (override) for Body.
      *
@@ -3166,14 +3135,14 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed acceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the acceleration ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the acceleration ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The acceleration ratio affects all subsequent motion commands until
      *       changed. Lower ratios result in smoother, more gradual motions
      *       which may be desirable for delicate operations or payload stability.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetAccRatio(FX_DOUBLE acc_ratio);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetAccRatio(double acc_ratio);
     /**
      * @brief Sets the joint proportional (P) gains for Body.
      *
@@ -3183,11 +3152,11 @@ extern "C"
      * against external forces. Higher K values make joints stiffer; lower
      * values make them more compliant.
      *
-     * @param[in] p Array of 6 joint proportional gain values (FX_DOUBLE) in appropriate
+     * @param[in] p Array of 6 joint proportional gain values (double) in appropriate
      *             units (typically Nm/Deg).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint stiffness parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the joint stiffness parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive proportional gain can cause high current draw, mechanical
@@ -3199,7 +3168,7 @@ extern "C"
      *       for subsequent control cycles. The effect is immediate for
      *       PD control.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetPDP(FX_DOUBLE p[6]);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetPDP(double p[6]);
     /**
      * @brief Sets the joint derivative (D) gains for Body.
      *
@@ -3209,11 +3178,11 @@ extern "C"
      * suppress oscillations and vibrations. Higher D values increase
      * damping; lower values reduce it.
      *
-     * @param[in] d Array of 6 joint derivative gain values (FX_DOUBLE) in appropriate
+     * @param[in] d Array of 6 joint derivative gain values (double) in appropriate
      *             units (typically Nm·s/Deg).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint derivative gain parameters were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the joint derivative gain parameters were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @warning Excessive derivative gain can cause sluggish response, high current
@@ -3226,7 +3195,7 @@ extern "C"
      *       PD control; for position control, it affects the
      *       derivative gain of the position loop.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetPDD(FX_DOUBLE d[6]);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetPDD(double d[6]);
     /**
      * @brief Initializes a trajectory for Body with the specified number of points.
      *
@@ -3241,9 +3210,9 @@ extern "C"
      *                     number of points that can be added to the trajectory
      *                     before execution. Range is typically 5 to 5000.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
+     * @return int Returns #1 if the trajectory was successfully
      *                  initialized with the specified number of points.
-     *                  Returns #FX_FALSE if the operation failed.
+     *                  Returns #0 if the operation failed.
      *
      * @note Initializing a trajectory does not start execution. After
      *       initialization, points must be added using functions like
@@ -3260,7 +3229,7 @@ extern "C"
      * @see FX_L0_Body_Runtime_SetTraj(), FX_L0_Body_Runtime_RunTraj(),
      *      FX_L0_Body_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_InitTraj(FX_INT32 point_num);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_InitTraj(int point_num);
     /**
      * @brief Sets a block of trajectory points for Body.
      *
@@ -3284,14 +3253,14 @@ extern "C"
      *                      {point0_data0, point0_data1, ..., point0_data5,
      *                       point1_data0, point1_data1, ..., point1_data5, ...}
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory points were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the trajectory points were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @see FX_L0_Body_Runtime_InitTraj(), FX_L0_Body_Runtime_RunTraj(),
      *      FX_L0_Body_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_SetTraj(FX_INT32 serial, FX_INT32 point_num, FX_DOUBLE *point_data);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_SetTraj(int serial, int point_num, double *point_data);
     /**
      * @brief Starts execution of the loaded trajectory for Body.
      *
@@ -3301,8 +3270,8 @@ extern "C"
      * defined in the trajectory data. Execution continues until all points
      * are completed, the trajectory is stopped, or an error occurs.
      *
-     * @return FX_BOOL Returns #FX_TRUE if trajectory execution was successfully
-     *                  started. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if trajectory execution was successfully
+     *                  started. Returns #0 if the operation failed.
      *
      * @note Trajectory execution is typically asynchronous; this function
      *       returns immediately after starting execution. The trajectory can be
@@ -3319,7 +3288,7 @@ extern "C"
      * @see FX_L0_Body_Runtime_InitTraj(), FX_L0_Body_Runtime_SetTraj(),
      *      FX_L0_Body_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_RunTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_RunTraj(void);
     /**
      * @brief Stops execution of the currently running trajectory for Body.
      *
@@ -3330,8 +3299,8 @@ extern "C"
      * and the arm remains at its current position (or the position
      * reached after deceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
-     *                  stopped. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the trajectory was successfully
+     *                  stopped. Returns #0 if the operation failed.
      *
      * @post If successful, trajectory execution is terminated. The body
      *       comes to a complete stop.
@@ -3339,7 +3308,38 @@ extern "C"
      * @see FX_L0_Body_Runtime_InitTraj(), FX_L0_Body_Runtime_SetTraj(),
      *      FX_L0_Body_Runtime_RunTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Body_Runtime_StopTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Body_Runtime_StopTraj(void);
+    /**
+     * @brief Immediately stops all motion and activates emergency stop for Lift.
+     *
+     * This function triggers an emergency stop (E-stop) condition for the Lift
+     * robotic system. It immediately halts all servo movements, disables motors,
+     * and applies brakes (if available) to bring Lift to a complete stop as
+     * quickly as possible. This function should be used in critical safety
+     * situations to prevent damage or injury.
+     *
+     * @return int Returns #1 if the emergency stop was successfully
+     *                  activated. Returns #0 if the emergency stop
+     *                  failed to activate due to hardware faults, communication
+     *                  errors, or because Lift is already in an emergency stop
+     *                  state.
+     *
+     * @note Once activated, the emergency stop condition typically requires
+     *       manual intervention to reset. After calling this function, the
+     *       system may need to be explicitly reset or re-enabled before normal
+     *       operation can resume.
+     *
+     * @warning This function causes abrupt stopping which may cause mechanical
+     *          stress, positioning errors, or dropped payloads. Use only in
+     *          genuine emergency situations. Do not use for normal stopping
+     *          procedures.
+     *
+     * @pre None. This function can be called at any time, even during motion.
+     *
+     * @post Lift is in emergency stop state: motors are disabled, brakes are
+     *       engaged (if available), and Lift will go to ERROR state.
+     */
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_EmergencyStop(void);
     /**
      * @brief Sets the runtime state of the Lift.
      *
@@ -3352,8 +3352,8 @@ extern "C"
      *                  - LIFT_STATE_IDLE: Lift is disabled
      *                  - LIFT_STATE_POSITION: Lift is in position control mode
      *
-     * @return FX_BOOL Returns #FX_TRUE if the state transition was successful.
-     *                  Returns #FX_FALSE if the state transition failed due to
+     * @return int Returns #1 if the state transition was successful.
+     *                  Returns #0 if the state transition failed due to
      *                  invalid target state, current state prevents transition,
      *                  hardware errors, or safety constraints.
      *
@@ -3365,7 +3365,7 @@ extern "C"
      *       corresponding behavior changes. State-dependent functions
      *       will behave according to the new state.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_SetState(FX_INT32 state);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_SetState(int state);
     /**
      * @brief Sets the joint position command for Lift.
      *
@@ -3374,18 +3374,18 @@ extern "C"
      * 2 joints of Lift. The arm will move to these positions using the
      * currently configured motion settings.
      *
-     * @param[in] joint_pos Array of 2 joint position values (FX_DOUBLE) in
+     * @param[in] joint_pos Array of 2 joint position values (double) in
      *                     degrees.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the joint position command was
+     * @return int Returns #1 if the joint position command was
      *                  successfully accepted and queued for execution.
-     *                  Returns #FX_FALSE if the command was rejected.
+     *                  Returns #0 if the command was rejected.
      *
      * @post If successful, Lift begins moving to the specified joint positions.
      *       The motion occurs asynchronously; the function returns before
      *       motion is complete.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[2]);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_SetJointPosCmd(double joint_pos[2]);
     /**
      * @brief Sets the velocity ratio (override) for Lift.
      *
@@ -3399,12 +3399,12 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed speed).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the velocity ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the velocity ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The velocity ratio affects all subsequent motion commands dynamically.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_SetVelRatio(double vel_ratio);
     /**
      * @brief Sets the acceleration ratio (override) for Lift.
      *
@@ -3418,14 +3418,14 @@ extern "C"
      *                     Range is typically 1.0 to 100.0 (1% to 100% of
      *                     programmed acceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the acceleration ratio was successfully
-     *                  set. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the acceleration ratio was successfully
+     *                  set. Returns #0 if the operation failed.
      *
      * @note The acceleration ratio affects all subsequent motion commands until
      *       changed. Lower ratios result in smoother, more gradual motions
      *       which may be desirable for delicate operations or payload stability.
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_SetAccRatio(FX_DOUBLE acc_ratio);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_SetAccRatio(double acc_ratio);
     /**
      * @brief Initializes a trajectory for Lift with the specified number of points.
      *
@@ -3440,9 +3440,9 @@ extern "C"
      *                     number of points that can be added to the trajectory
      *                     before execution. Range is typically 5 to 5000.
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
+     * @return int Returns #1 if the trajectory was successfully
      *                  initialized with the specified number of points.
-     *                  Returns #FX_FALSE if the operation failed.
+     *                  Returns #0 if the operation failed.
      *
      * @note Initializing a trajectory does not start execution. After
      *       initialization, points must be added using functions like
@@ -3459,7 +3459,7 @@ extern "C"
      * @see FX_L0_Lift_Runtime_SetTraj(), FX_L0_Lift_Runtime_RunTraj(),
      *      FX_L0_Lift_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_InitTraj(FX_INT32 point_num);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_InitTraj(int point_num);
     /**
      * @brief Sets a block of trajectory points for Body.
      *
@@ -3483,14 +3483,14 @@ extern "C"
      *                      {point0_data0, point0_data1,
      *                       point1_data0, point1_data1,...}
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory points were
-     *                  successfully set. Returns #FX_FALSE if the operation
+     * @return int Returns #1 if the trajectory points were
+     *                  successfully set. Returns #0 if the operation
      *                  failed.
      *
      * @see FX_L0_Lift_Runtime_InitTraj(), FX_L0_Lift_Runtime_RunTraj(),
      *      FX_L0_Lift_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_SetTraj(FX_INT32 serial, FX_INT32 point_num, FX_DOUBLE *point_data);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_SetTraj(int serial, int point_num, double *point_data);
     /**
      * @brief Starts execution of the loaded trajectory for Lift.
      *
@@ -3500,8 +3500,8 @@ extern "C"
      * defined in the trajectory data. Execution continues until all points
      * are completed, the trajectory is stopped, or an error occurs.
      *
-     * @return FX_BOOL Returns #FX_TRUE if trajectory execution was successfully
-     *                  started. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if trajectory execution was successfully
+     *                  started. Returns #0 if the operation failed.
      *
      * @note Trajectory execution is typically asynchronous; this function
      *       returns immediately after starting execution. The trajectory can be
@@ -3518,7 +3518,7 @@ extern "C"
      * @see FX_L0_LiftRuntime_InitTraj(), FX_L0_Lift_Runtime_SetTraj(),
      *      FX_L0_Lift_Runtime_StopTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_RunTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_RunTraj(void);
     /**
      * @brief Stops execution of the currently running trajectory for Lift.
      *
@@ -3529,8 +3529,8 @@ extern "C"
      * and the arm remains at its current position (or the position
      * reached after deceleration).
      *
-     * @return FX_BOOL Returns #FX_TRUE if the trajectory was successfully
-     *                  stopped. Returns #FX_FALSE if the operation failed.
+     * @return int Returns #1 if the trajectory was successfully
+     *                  stopped. Returns #0 if the operation failed.
      *
      * @post If successful, trajectory execution is terminated. The lift
      *       comes to a complete stop.
@@ -3538,7 +3538,7 @@ extern "C"
      * @see FX_L0_Lift_Runtime_InitTraj(), FX_L0_Lift_Runtime_SetTraj(),
      *      FX_L0_Lift_Runtime_RunTraj()
      */
-    CONTROL_SDK_API FX_BOOL FX_L0_Lift_Runtime_StopTraj(FX_VOID);
+    CONTROL_SDK_API int FX_L0_Lift_Runtime_StopTraj(void);
     /**
      * @brief Retrieves a constant pointer to the robot runtime data structure.
      *
@@ -3551,7 +3551,7 @@ extern "C"
      *         Returns NULL if the robot runtime data is not available,
      *         the system is not initialized, or an error occurred.
      */
-    CONTROL_SDK_API const ROBOT_RT *FX_L0_GetRobotRT(FX_VOID);
+    CONTROL_SDK_API const ROBOT_RT *FX_L0_GetRobotRT(void);
     /**
      * @brief Retrieves a constant pointer to the robot non-runtime data structure.
      *
@@ -3564,7 +3564,7 @@ extern "C"
      *         Returns NULL if the robot runtime data is not available,
      *         the system is not initialized, or an error occurred.
      */
-    CONTROL_SDK_API const ROBOT_SG *FX_L0_GetRobotSG(FX_VOID);
+    CONTROL_SDK_API const ROBOT_SG *FX_L0_GetRobotSG(void);
 
 #ifdef __cplusplus
 }

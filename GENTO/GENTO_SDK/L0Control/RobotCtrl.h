@@ -120,15 +120,10 @@ public:
 
 	// 各部件的清错和急停
 	static FX_BOOL Arm0_State_Reset();
-	static FX_BOOL Arm0_State_EmergencyStop();
 	static FX_BOOL Arm1_State_Reset();
-	static FX_BOOL Arm1_State_EmergencyStop();
 	static FX_BOOL Head_State_Reset();
-	static FX_BOOL Head_State_EmergencyStop();
 	static FX_BOOL Body_State_Reset();
-	static FX_BOOL Body_State_EmergencyStop();
 	static FX_BOOL Lift_State_Reset();
-	static FX_BOOL Lift_State_EmergencyStop();
 
 	/*/////////////////////////////////////////////////////////
 	///运行时设置接口,支持多条指令同时下发
@@ -137,6 +132,7 @@ public:
 		 设置关节刚度参数  设置关节阻尼参数 设置笛卡尔刚度参数 设置笛卡尔阻尼参数
 		 设置工具刚度参数  设置工具阻尼参数 设置扭矩阻抗类型 设置拖动类型
 		 初始化关节空间规划初始化  设置轨迹 轨迹运行  轨迹运行中断*/
+	static FX_BOOL Arm0_Runtime_EmergencyStop();
 	static FX_BOOL Arm0_Runtime_SetState(FX_INT32 state);
 	static FX_BOOL Arm0_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[7]);
 	static FX_BOOL Arm0_Runtime_SetJointTorCmd(FX_DOUBLE joint_tor[7]);
@@ -160,6 +156,7 @@ public:
 		 设置关节刚度参数  设置关节阻尼参数 设置笛卡尔刚度参数 设置笛卡尔阻尼参数
 		 设置工具刚度参数  设置工具阻尼参数 设置扭矩阻抗类型 设置拖动类型
 		 初始化关节空间规划初始化  设置轨迹 轨迹运行  轨迹运行中断*/
+	static FX_BOOL Arm1_Runtime_EmergencyStop();
 	static FX_BOOL Arm1_Runtime_SetState(FX_INT32 state);
 	static FX_BOOL Arm1_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[7]);
 	static FX_BOOL Arm1_Runtime_SetJointTorCmd(FX_DOUBLE joint_tor[7]);
@@ -174,17 +171,19 @@ public:
 	static FX_BOOL Arm1_Runtime_SetToolK(FX_DOUBLE k[6]);
 	static FX_BOOL Arm1_Runtime_SetToolD(FX_DOUBLE d[10]);
 	static FX_BOOL Arm1_Runtime_SetImpType(FX_INT32 imp_type);
-	static FX_BOOL Arm1_Runtime_SetDragType(FX_INT32 drag_type);
+	static FX_BOOL Arm1_Runtime_SetDragType(FX_INT16 drag_type);
 	static FX_BOOL Arm1_Runtime_InitTraj(FX_INT32 point_num);
 	static FX_BOOL Arm1_Runtime_SetTraj(FX_INT32 serial, FX_INT32 point_num, FX_DOUBLE *point_data);
 	static FX_BOOL Arm1_Runtime_RunTraj();
 	static FX_BOOL Arm1_Runtime_StopTraj();
 	/*(3) HEAD 设置目标关节位置  设置速度 设置加速度*/
+	static FX_BOOL Head_Runtime_EmergencyStop();
 	static FX_BOOL Head_Runtime_SetState(FX_INT32 state);
 	static FX_BOOL Head_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[3]);
 	static FX_BOOL Head_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
 	static FX_BOOL Head_Runtime_SetAccRatio(FX_DOUBLE acc_ratio);
 	/*(4) BODY 设置目标关节位置  设置速度 设置加速度 设置PD模式下的P参数 设置PD模式下的D参数*/
+	static FX_BOOL Body_Runtime_EmergencyStop();
 	static FX_BOOL Body_Runtime_SetState(FX_INT32 state);
 	static FX_BOOL Body_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[6]);
 	static FX_BOOL Body_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
@@ -196,6 +195,7 @@ public:
 	static FX_BOOL Body_Runtime_RunTraj();
 	static FX_BOOL Body_Runtime_StopTraj();
 	/*(5) LIFT 设置状态 设置目标关节位置  设置速度 设置加速度*/
+	static FX_BOOL Lift_Runtime_EmergencyStop();
 	static FX_BOOL Lift_Runtime_SetState(FX_INT32 state);
 	static FX_BOOL Lift_Runtime_SetJointPosCmd(FX_DOUBLE joint_pos[2]);
 	static FX_BOOL Lift_Runtime_SetVelRatio(FX_DOUBLE vel_ratio);
@@ -215,14 +215,15 @@ public:
 	/*/////////////////////////////////////////////////////////
 	///内部使用接口，用户不要使用
 	/////////////////////////////////////////////////////////*/
-    FX_BOOL IsLinked();
+	FX_BOOL IsLinked();
 	FX_VOID DoCnt();
 	FX_VOID DoRecv();
 	FX_VOID DoSend();
+	FX_BOOL WaitOpReturn(FX_INT32 serial, FX_INT32 timeout);
 
 private:
 	FX_BOOL m_LinkTag;
-    FX_BOOL m_RtSendLock;
+	FX_BOOL m_RtSendLock;
 	FX_BOOL m_LocalLogTag;
 
 	FX_INT32L m_RobotRTUpdateTag;

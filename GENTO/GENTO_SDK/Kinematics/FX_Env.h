@@ -7,7 +7,8 @@ class CFxIFEnv
 public:
 	CFxIFEnv();
 	~CFxIFEnv();
-	FX_BOOL OnInitEnv(FX_CHAR *env_path, FX_INT32 RobotSerial);
+	FX_BOOL OnInitEnv(FX_INT32 RobotSerial, FX_INT32 *type, FX_DOUBLE DH[8][4], FX_DOUBLE PNVA[8][4], FX_DOUBLE BOUND[4][3],
+					  FX_DOUBLE GRV[3], FX_DOUBLE MASS[7], FX_DOUBLE MCP[7][3], FX_DOUBLE I[7][6]);
 	FX_BOOL OnGetArmType(FX_INT32 &type);
 	FX_BOOL OnGetArmLmt(FX_INT32 &type, FX_DOUBLE PosNeg[8], FX_DOUBLE PosPos[8], FX_DOUBLE VelLmt[8], FX_DOUBLE AccLmt[8]);
 	FX_BOOL OnGetArmKinePara(FX_INT32 &type, FX_DOUBLE dh[8][4], FX_DOUBLE pnva[7][4], FX_DOUBLE bd[4][3]);

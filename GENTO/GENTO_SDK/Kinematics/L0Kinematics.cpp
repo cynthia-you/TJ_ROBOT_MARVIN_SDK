@@ -9,34 +9,34 @@ struct FX_MotionContext
     CFxPln planner;
 };
 
-static FX_VOID array_to_matrix44(const FX_DOUBLE arr[16], Matrix4 mat)
+static void array_to_matrix44(double arr[16], Matrix4 mat)
 {
-    for (FX_INT32 i = 0; i < 4; ++i)
-        for (FX_INT32 j = 0; j < 4; ++j)
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
             mat[i][j] = arr[i * 4 + j];
 }
 
-static FX_VOID matrix44_to_array(const Matrix4 mat, FX_DOUBLE arr[16])
+static void matrix44_to_array(Matrix4 mat, double arr[16])
 {
-    for (FX_INT32 i = 0; i < 4; ++i)
-        for (FX_INT32 j = 0; j < 4; ++j)
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
             arr[i * 4 + j] = mat[i][j];
 }
 
-static FX_VOID copy_vect7(const FX_DOUBLE src[7], Vect7 dst)
+static void copy_vect7(double src[7], Vect7 dst)
 {
-    for (FX_INT32 i = 0; i < 7; ++i)
+    for (int i = 0; i < 7; ++i)
         dst[i] = src[i];
 }
 
-static FX_VOID copy_vect6(const FX_DOUBLE src[6], Vect6 dst)
+static void copy_vect6(double src[6], Vect6 dst)
 {
-    for (FX_INT32 i = 0; i < 6; ++i)
+    for (int i = 0; i < 6; ++i)
         dst[i] = src[i];
 }
 
 /* ==================== 生命周期 ==================== */
-FX_MotionHandle FX_L0_Kinematics_create(FX_VOID)
+FX_MotionHandle FX_L0_Kinematics_create(void)
 {
     FX_MotionContext *ctx = new FX_MotionContext();
     if (!ctx)
@@ -44,13 +44,13 @@ FX_MotionHandle FX_L0_Kinematics_create(FX_VOID)
     return ctx;
 }
 
-FX_VOID FX_L0_Kinematics_destroy(FX_MotionHandle handle)
+void FX_L0_Kinematics_destroy(FX_MotionHandle handle)
 {
     if (handle)
         delete handle;
 }
 
-FX_VOID FX_L0_Kinematics_log_switch(FX_MotionHandle handle, FX_INT32 on)
+void FX_L0_Kinematics_log_switch(FX_MotionHandle handle, int on)
 {
     if (!handle)
         return;
@@ -61,45 +61,43 @@ FX_VOID FX_L0_Kinematics_log_switch(FX_MotionHandle handle, FX_INT32 on)
 }
 
 /* ==================== 初始化 ==================== */
-FX_INT32 FX_L0_Kinematics_init_single_arm(FX_MotionHandle handle, const char *env_path, FX_INT32 robot_serial)
+int FX_L0_Kinematics_init_single_arm(FX_MotionHandle handle,
+                                     int RobotSerial, int *type, double DH[8][4], double PNVA[8][4], double BOUND[4][3],
+                                     double GRV[3], double MASS[7], double MCP[7][3], double I[7][6])
 {
     if (!handle)
         return FX_MOTION_ERROR;
-    if (robot_serial == 0)
+    if (RobotSerial == 0)
     {
-        if (!handle->kine_left.L0_OnInitEnv(const_cast<char *>(env_path), robot_serial))
+        if (!handle->kine_left.L0_OnInitEnv(0, type, DH, PNVA, BOUND, GRV, MASS, MCP, I))
             return FX_MOTION_ERROR;
     }
-    else if (robot_serial == 1)
+    else if (RobotSerial == 1)
     {
-        if (!handle->kine_right.L0_OnInitEnv(const_cast<char *>(env_path), robot_serial))
+        if (!handle->kine_right.L0_OnInitEnv(1, type, DH, PNVA, BOUND, GRV, MASS, MCP, I))
             return FX_MOTION_ERROR;
     }
     else
     {
         return FX_MOTION_ERROR;
     }
-    if (!handle->planner.L0_OnInitEnv_SingleArm(const_cast<char *>(env_path), robot_serial))
+    if (!handle->planner.L0_OnInitEnv_SingleArm(RobotSerial, type, DH, PNVA, BOUND))
         return FX_MOTION_ERROR;
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_init_dual_arm(FX_MotionHandle handle, const char *env_path)
+int FX_L0_Kinematics_init_dual_arm(FX_MotionHandle handle, int type[2], double DH[2][8][4], double PNVA[2][8][4], double BOUND[2][4][3])
 {
     if (!handle)
         return FX_MOTION_ERROR;
-    if (!handle->planner.L0_OnInitEnv_DualArm(const_cast<char *>(env_path)))
+    if (!handle->planner.L0_OnInitEnv_DualArm(type, DH, PNVA, BOUND))
         return FX_MOTION_ERROR;
-    // if (!handle->kine_left.L0_OnInitEnv(const_cast<char *>(env_path), 0))
-    //     return FX_MOTION_ERROR;
-    // if (!handle->kine_right.L0_OnInitEnv(const_cast<char *>(env_path), 1))
-    //     return FX_MOTION_ERROR;
     return FX_MOTION_OK;
 }
 
 /* ==================== 单臂运动学 ==================== */
-FX_INT32 FX_L0_Kinematics_forward_kinematics(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                             const FX_DOUBLE joints[7], FX_DOUBLE pose_matrix[16])
+int FX_L0_Kinematics_forward_kinematics(FX_MotionHandle handle, int robot_serial,
+                                        double joints[7], double pose_matrix[16])
 {
     if (!handle || !joints || !pose_matrix)
         return FX_MOTION_ERROR;
@@ -116,8 +114,8 @@ FX_INT32 FX_L0_Kinematics_forward_kinematics(FX_MotionHandle handle, FX_INT32 ro
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_jacobian(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                   const FX_DOUBLE joints[7], FX_DOUBLE jacobian[42])
+int FX_L0_Kinematics_jacobian(FX_MotionHandle handle, int robot_serial,
+                              double joints[7], double jacobian[42])
 {
     if (!handle || !joints || !jacobian)
         return FX_MOTION_ERROR;
@@ -127,18 +125,18 @@ FX_INT32 FX_L0_Kinematics_jacobian(FX_MotionHandle handle, FX_INT32 robot_serial
 
     Vect7 jv;
     copy_vect7(joints, jv);
-    FX_DOUBLE jcb[6][7];
+    double jcb[6][7];
     if (!kine->L0_OnSolveArmJcb(jv, jcb))
         return FX_MOTION_ERROR;
-    FX_INT32 idx = 0;
-    for (FX_INT32 i = 0; i < 6; ++i)
-        for (FX_INT32 j = 0; j < 7; ++j)
+    int idx = 0;
+    for (int i = 0; i < 6; ++i)
+        for (int j = 0; j < 7; ++j)
             jacobian[idx++] = jcb[i][j];
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_inverse_kinematics(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                             FX_InvKineSolverParams *params)
+int FX_L0_Kinematics_inverse_kinematics(FX_MotionHandle handle, int robot_serial,
+                                        FX_InvKineSolverParams *params)
 {
     if (!handle || !params)
         return FX_MOTION_ERROR;
@@ -173,47 +171,16 @@ FX_INT32 FX_L0_Kinematics_inverse_kinematics(FX_MotionHandle handle, FX_INT32 ro
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_get_joint_limits(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                           FX_INT32 *robot_type,
-                                           FX_DOUBLE pos_limit[7], FX_DOUBLE neg_limit[7],
-                                           FX_DOUBLE vel_limit[7], FX_DOUBLE acc_limit[7])
-{
-    if (!handle)
-        return FX_MOTION_ERROR;
-    CFxKineIF *kine = (robot_serial == 0) ? &handle->kine_left : &handle->kine_right;
-    if (!kine->m_InitTag)
-        return FX_MOTION_ERROR;
-
-    FX_DOUBLE lmt_neg[8] = {0}, lmt_pos[8] = {0}, lmt_vel[8] = {0}, lmt_acc[8] = {0};
-    FX_INT32 type = 0;
-    if (!kine->OnGetArmLmt(type, lmt_neg, lmt_pos, lmt_vel, lmt_acc))
-        return FX_MOTION_ERROR;
-    if (robot_type)
-        *robot_type = type;
-    for (FX_INT32 i = 0; i < 7; ++i)
-    {
-        if (neg_limit)
-            neg_limit[i] = lmt_neg[i];
-        if (pos_limit)
-            pos_limit[i] = lmt_pos[i];
-        if (vel_limit)
-            vel_limit[i] = lmt_vel[i];
-        if (acc_limit)
-            acc_limit[i] = lmt_acc[i];
-    }
-    return FX_MOTION_OK;
-}
-
 /* ==================== MAX 身体运动学 ==================== */
-FX_INT32 FX_L0_Kinematics_set_body_condition(FX_MotionHandle handle,
-                                             const FX_DOUBLE std_body[3], const FX_DOUBLE k_body[3],
-                                             FX_DOUBLE std_left_len, FX_DOUBLE k_left,
-                                             FX_DOUBLE std_right_len, FX_DOUBLE k_right)
+int FX_L0_Kinematics_set_body_condition(FX_MotionHandle handle,
+                                        double std_body[3], double k_body[3],
+                                        double std_left_len, double k_left,
+                                        double std_right_len, double k_right)
 {
     if (!handle)
         return FX_MOTION_ERROR;
     Vect3 sb, kb;
-    for (FX_INT32 i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         sb[i] = std_body[i];
         kb[i] = k_body[i];
@@ -222,7 +189,7 @@ FX_INT32 FX_L0_Kinematics_set_body_condition(FX_MotionHandle handle,
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_body_forward(FX_MotionHandle handle, const FX_DOUBLE jv[3], FX_DOUBLE left_shoulder_matrix[16], FX_DOUBLE right_shoulder_matrix[16])
+int FX_L0_Kinematics_body_forward(FX_MotionHandle handle, double jv[3], double left_shoulder_matrix[16], double right_shoulder_matrix[16])
 {
     if (!jv || !left_shoulder_matrix || !right_shoulder_matrix)
         return FX_MOTION_ERROR;
@@ -234,8 +201,8 @@ FX_INT32 FX_L0_Kinematics_body_forward(FX_MotionHandle handle, const FX_DOUBLE j
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_calc_body_position(FX_MotionHandle handle, const FX_DOUBLE left_tcp[3], const FX_DOUBLE right_tcp[3],
-                                             FX_DOUBLE out_body_joints[3])
+int FX_L0_Kinematics_calc_body_position(FX_MotionHandle handle, double left_tcp[3], double right_tcp[3],
+                                        double out_body_joints[3])
 {
     if (!left_tcp || !right_tcp || !out_body_joints)
         return FX_MOTION_ERROR;
@@ -249,9 +216,9 @@ FX_INT32 FX_L0_Kinematics_calc_body_position(FX_MotionHandle handle, const FX_DO
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_calc_body_position_with_ref(FX_MotionHandle handle, const FX_DOUBLE ref_body_joints[3],
-                                                      const FX_DOUBLE left_tcp[3], const FX_DOUBLE right_tcp[3],
-                                                      FX_DOUBLE out_body_joints[3])
+int FX_L0_Kinematics_calc_body_position_with_ref(FX_MotionHandle handle, double ref_body_joints[3],
+                                                 double left_tcp[3], double right_tcp[3],
+                                                 double out_body_joints[3])
 {
     if (!ref_body_joints || !left_tcp || !right_tcp || !out_body_joints)
         return FX_MOTION_ERROR;
@@ -267,17 +234,17 @@ FX_INT32 FX_L0_Kinematics_calc_body_position_with_ref(FX_MotionHandle handle, co
 }
 
 /* ==================== 运动规划（单臂） ==================== */
-FX_INT32 FX_L0_Kinematics_plan_joint_move(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                          const FX_DOUBLE start_joints[7], const FX_DOUBLE end_joints[7],
-                                          FX_DOUBLE vel_ratio, FX_DOUBLE acc_ratio,
-                                          FX_DOUBLE *point_set_handle, FX_INT32 *point_num)
+int FX_L0_Kinematics_plan_joint_move(FX_MotionHandle handle, int robot_serial,
+                                     double start_joints[7], double end_joints[7],
+                                     double vel_ratio, double acc_ratio,
+                                     double *point_set_handle, int *point_num)
 {
     if (!handle)
         return FX_MOTION_ERROR;
     Vect7 s, e;
     copy_vect7(start_joints, s);
     copy_vect7(end_joints, e);
-    FX_VOID *pset_c = FX_L0_CPointSet_Create();
+    void *pset_c = FX_L0_CPointSet_Create();
     CPointSet *pset = reinterpret_cast<CPointSet *>(pset_c);
     if (!handle->planner.L0_OnMovJ(s, e, vel_ratio, acc_ratio, pset))
         return FX_MOTION_ERROR;
@@ -292,11 +259,11 @@ FX_INT32 FX_L0_Kinematics_plan_joint_move(FX_MotionHandle handle, FX_INT32 robot
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_plan_linear_move(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                           const FX_DOUBLE start_xyzabc[6], const FX_DOUBLE end_xyzabc[6],
-                                           const FX_DOUBLE ref_joints[7],
-                                           FX_DOUBLE vel, FX_DOUBLE acc, FX_INT32 freq,
-                                           FX_DOUBLE *point_set_handle, FX_INT32 *point_num)
+int FX_L0_Kinematics_plan_linear_move(FX_MotionHandle handle, int robot_serial,
+                                      double start_xyzabc[6], double end_xyzabc[6],
+                                      double ref_joints[7],
+                                      double vel, double acc, int freq,
+                                      double *point_set_handle, int *point_num)
 {
     if (!handle)
         return FX_MOTION_ERROR;
@@ -305,7 +272,7 @@ FX_INT32 FX_L0_Kinematics_plan_linear_move(FX_MotionHandle handle, FX_INT32 robo
     copy_vect6(end_xyzabc, e);
     Vect7 ref;
     copy_vect7(ref_joints, ref);
-    FX_VOID *pset_c = FX_L0_CPointSet_Create();
+    void *pset_c = FX_L0_CPointSet_Create();
     CPointSet *pset = reinterpret_cast<CPointSet *>(pset_c);
     if (!handle->planner.L0_OnMovL(s, e, ref, vel, acc, freq, pset))
         return FX_MOTION_ERROR;
@@ -320,17 +287,17 @@ FX_INT32 FX_L0_Kinematics_plan_linear_move(FX_MotionHandle handle, FX_INT32 robo
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_plan_linear_keep_joints(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                                  const FX_DOUBLE start_joints[7], const FX_DOUBLE end_joints[7],
-                                                  FX_DOUBLE vel, FX_DOUBLE acc, FX_INT32 freq,
-                                                  FX_DOUBLE *point_set_handle, FX_INT32 *point_num)
+int FX_L0_Kinematics_plan_linear_keep_joints(FX_MotionHandle handle, int robot_serial,
+                                             double start_joints[7], double end_joints[7],
+                                             double vel, double acc, int freq,
+                                             double *point_set_handle, int *point_num)
 {
     if (!handle)
         return FX_MOTION_ERROR;
     Vect7 s, e;
     copy_vect7(start_joints, s);
     copy_vect7(end_joints, e);
-    FX_VOID *pset_c = FX_L0_CPointSet_Create();
+    void *pset_c = FX_L0_CPointSet_Create();
     CPointSet *pset = reinterpret_cast<CPointSet *>(pset_c);
     if (!handle->planner.L0_OnMovL_KeepJ(s, e, vel, acc, freq, pset))
         return FX_MOTION_ERROR;
@@ -345,12 +312,12 @@ FX_INT32 FX_L0_Kinematics_plan_linear_keep_joints(FX_MotionHandle handle, FX_INT
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_multi_points_set_movl_start(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                                      const FX_DOUBLE ref_joints[7],
-                                                      const FX_DOUBLE start_xyzabc[6], const FX_DOUBLE end_xyzabc[6],
-                                                      FX_DOUBLE allow_range, FX_INT32 zsp_type,
-                                                      const FX_DOUBLE zsp_para[6],
-                                                      FX_DOUBLE vel, FX_DOUBLE acc, FX_INT32 freq)
+int FX_L0_Kinematics_multi_points_set_movl_start(FX_MotionHandle handle, int robot_serial,
+                                                 double ref_joints[7],
+                                                 double start_xyzabc[6], double end_xyzabc[6],
+                                                 double allow_range, int zsp_type,
+                                                 double zsp_para[6],
+                                                 double vel, double acc, int freq)
 {
     if (!handle || !ref_joints || !start_xyzabc || !end_xyzabc || !zsp_para)
         return FX_MOTION_ERROR;
@@ -368,11 +335,11 @@ FX_INT32 FX_L0_Kinematics_multi_points_set_movl_start(FX_MotionHandle handle, FX
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_multi_points_set_movl_next_points(FX_MotionHandle handle, FX_INT32 robot_serial,
-                                                            const FX_DOUBLE next_xyzabc[6],
-                                                            FX_DOUBLE allow_range, FX_INT32 zsp_type,
-                                                            const FX_DOUBLE zsp_para[6],
-                                                            FX_DOUBLE vel, FX_DOUBLE acc)
+int FX_L0_Kinematics_multi_points_set_movl_next_points(FX_MotionHandle handle, int robot_serial,
+                                                       double next_xyzabc[6],
+                                                       double allow_range, int zsp_type,
+                                                       double zsp_para[6],
+                                                       double vel, double acc)
 {
     if (!handle || !next_xyzabc || !zsp_para)
         return FX_MOTION_ERROR;
@@ -387,13 +354,13 @@ FX_INT32 FX_L0_Kinematics_multi_points_set_movl_next_points(FX_MotionHandle hand
     return FX_MOTION_OK;
 }
 
-FX_INT32 FX_L0_Kinematics_multi_points_get_movl_path(FX_MotionHandle handle,
-                                                     FX_DOUBLE *point_set_handle, FX_INT32 *point_num)
+int FX_L0_Kinematics_multi_points_get_movl_path(FX_MotionHandle handle,
+                                                double *point_set_handle, int *point_num)
 {
     if (!handle || !point_set_handle || !point_num)
         return FX_MOTION_ERROR;
 
-    FX_VOID *pset_c = FX_L0_CPointSet_Create();
+    void *pset_c = FX_L0_CPointSet_Create();
     CPointSet *pset = reinterpret_cast<CPointSet *>(pset_c);
     if (!pset)
         return FX_MOTION_ERROR;
@@ -416,9 +383,9 @@ FX_INT32 FX_L0_Kinematics_multi_points_get_movl_path(FX_MotionHandle handle,
 }
 
 /* ==================== 双臂同步规划 ==================== */
-FX_INT32 FX_L0_Kinematics_plan_dual_arm_fixed_body(FX_MotionHandle handle,
-                                                   const DualArmFixedBodyParams *params,
-                                                   FX_DOUBLE *left_point_set, FX_DOUBLE *right_point_set, FX_INT32 *point_num)
+int FX_L0_Kinematics_plan_dual_arm_fixed_body(FX_MotionHandle handle,
+                                              DualArmFixedBodyParams *params,
+                                              double *left_point_set, double *right_point_set, int *point_num)
 {
     if (!handle || !params)
         return FX_MOTION_ERROR;
@@ -461,8 +428,8 @@ FX_INT32 FX_L0_Kinematics_plan_dual_arm_fixed_body(FX_MotionHandle handle,
     da.Freq = params->freq;
     da.Sync_Type = params->sync_type;
 
-    FX_VOID *pset_left = FX_L0_CPointSet_Create();
-    FX_VOID *pset_right = FX_L0_CPointSet_Create();
+    void *pset_left = FX_L0_CPointSet_Create();
+    void *pset_right = FX_L0_CPointSet_Create();
     CPointSet *left_pset = reinterpret_cast<CPointSet *>(pset_left);
     CPointSet *right_pset = reinterpret_cast<CPointSet *>(pset_right);
 
@@ -473,7 +440,7 @@ FX_INT32 FX_L0_Kinematics_plan_dual_arm_fixed_body(FX_MotionHandle handle,
     int left_num = left_pset->OnGetPointNum();
     int right_num = right_pset->OnGetPointNum();
 
-    if(left_num!=right_num)
+    if (left_num != right_num)
     {
         // 点数不一致，说明规划失败
         return FX_MOTION_ERROR;
@@ -482,7 +449,7 @@ FX_INT32 FX_L0_Kinematics_plan_dual_arm_fixed_body(FX_MotionHandle handle,
     {
         *point_num = left_num;
     }
-    
+
     if (!FX_L0_CPointSet_OnAppendPoint(pset_left, left_point_set) || !FX_L0_CPointSet_OnAppendPoint(pset_right, right_point_set))
         return FX_MOTION_ERROR;
 
@@ -492,12 +459,12 @@ FX_INT32 FX_L0_Kinematics_plan_dual_arm_fixed_body(FX_MotionHandle handle,
     return FX_MOTION_OK;
 }
 /* ===================== pointset ==================*/
-FX_VOID *FX_L0_CPointSet_Create()
+void *FX_L0_CPointSet_Create()
 {
     return new CPointSet();
 }
 
-FX_VOID FX_L0_CPointSet_Destroy(FX_VOID *pset)
+void FX_L0_CPointSet_Destroy(void *pset)
 {
     if (pset)
     {
@@ -505,15 +472,15 @@ FX_VOID FX_L0_CPointSet_Destroy(FX_VOID *pset)
     }
 }
 
-FX_BOOL FX_L0_CPointSet_OnInit(FX_VOID *pset, FX_INT32 ptype)
+int FX_L0_CPointSet_OnInit(void *pset, int ptype)
 {
     if (!pset)
-        return FX_FALSE;
+        return 0;
     CPointSet *pointSet = static_cast<CPointSet *>(pset);
-    return pointSet->OnInit(static_cast<PoinType>(ptype)) ? FX_TRUE : FX_FALSE;
+    return pointSet->OnInit(static_cast<PoinType>(ptype)) ? 1 : 0;
 }
 
-FX_INT32 FX_L0_CPointSet_OnGetPointNum(FX_VOID *pset)
+int FX_L0_CPointSet_OnGetPointNum(void *pset)
 {
     if (!pset)
         return 0;
@@ -521,7 +488,7 @@ FX_INT32 FX_L0_CPointSet_OnGetPointNum(FX_VOID *pset)
     return pointSet->OnGetPointNum();
 }
 
-FX_DOUBLE *FX_L0_CPointSet_OnGetPoint(FX_VOID *pset, FX_INT32 pos)
+double *FX_L0_CPointSet_OnGetPoint(void *pset, int pos)
 {
     if (!pset)
         return nullptr;
@@ -529,18 +496,18 @@ FX_DOUBLE *FX_L0_CPointSet_OnGetPoint(FX_VOID *pset, FX_INT32 pos)
     return pointSet->OnGetPoint(pos);
 }
 
-FX_BOOL FX_L0_CPointSet_OnSetPoint(FX_VOID *pset, FX_DOUBLE point_value[])
+int FX_L0_CPointSet_OnSetPoint(void *pset, double point_value[])
 {
     if (!pset)
-        return FX_FALSE;
+        return 0;
     CPointSet *pointSet = static_cast<CPointSet *>(pset);
-    return pointSet->OnSetPoint(point_value) ? FX_TRUE : FX_FALSE;
+    return pointSet->OnSetPoint(point_value) ? 1 : 0;
 }
 
-FX_BOOL FX_L0_CPointSet_OnAppendPoint(FX_VOID *pset, FX_DOUBLE *point_value)
+int FX_L0_CPointSet_OnAppendPoint(void *pset, double *point_value)
 {
     if (!pset)
-        return FX_FALSE;
+        return 0;
     CPointSet *pointSet = static_cast<CPointSet *>(pset);
     int num = pointSet->OnGetPointNum();
 
@@ -550,35 +517,35 @@ FX_BOOL FX_L0_CPointSet_OnAppendPoint(FX_VOID *pset, FX_DOUBLE *point_value)
         // pointset中的数据换成double序列
         double *p = pointSet->OnGetPoint(i);
         if (!p)
-            return FX_FALSE;
-            
+            return 0;
+
         for (int j = 0; j < 7; j++)
         {
             point_value[i * 7 + j] = p[j];
         }
     }
 
-    return FX_TRUE;
+    return 1;
 }
 /* ==================== 辅助工具 ==================== */
-FX_VOID FX_L0_XYZABC2Matrix(const FX_DOUBLE xyzabc[6], FX_DOUBLE matrix[16])
+void FX_L0_XYZABC2Matrix(double xyzabc[6], double matrix[16])
 {
     CFxPln pln;
     Matrix4 m;
-    FX_DOUBLE arr[6];
-    for (FX_INT32 i = 0; i < 6; ++i)
+    double arr[6];
+    for (int i = 0; i < 6; ++i)
         arr[i] = xyzabc[i];
     pln.L0_XYZABC2Matrix4_DEG(arr, m);
     matrix44_to_array(m, matrix);
 }
 
-FX_VOID FX_L0_Matrix2XYZABC(const FX_DOUBLE matrix[16], FX_DOUBLE xyzabc[6])
+void FX_L0_Matrix2XYZABC(double matrix[16], double xyzabc[6])
 {
     CFxPln pln;
     Matrix4 m;
     array_to_matrix44(matrix, m);
-    FX_DOUBLE out[6];
+    double out[6];
     pln.L0_Matrix42XYZABC_DEG(m, out);
-    for (FX_INT32 i = 0; i < 6; ++i)
+    for (int i = 0; i < 6; ++i)
         xyzabc[i] = out[i];
 }

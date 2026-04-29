@@ -57,6 +57,12 @@ typedef enum
 	UDP_LIFT_SG_VelRatio = 122, // settag[1]
 	UDP_LIFT_SG_AccRatio = 123, // settag[2]
 
+        UDP_ARM0_SP_Emcy = 200,         //special cmd 
+        UDP_ARM1_SP_Emcy = 201,         //special cmd 
+        UDP_HEAD_SP_Emcy = 202,         //special cmd 
+        UDP_BODY_SP_Emcy = 203,         //special cmd 
+        UDP_LIFT_SP_Emcy = 204,         //special cmd 
+
 	UDP_ARM0_SP_InitTraj = 210, // special cmd
 	UDP_ARM0_SP_SetTraj = 211,	// special cmd
 	UDP_ARM0_SP_RunTraj = 212,	// special cmd
@@ -164,147 +170,146 @@ typedef struct
 
 typedef struct
 {
-	FX_FLOAT m_ARM_CMD_Joint_Trq[7];   ///* 关节扭矩指令 *////
+	FX_FLOAT m_ARM_CMD_Joint_Tor[7];   ///* 关节扭矩指令 *////
 	FX_FLOAT m_ARM_CMD_Joint_Pos[7];   ///* 关节位置指令 *////
-	FX_INT16 m_ARM_CMD_Drag_Type;	   ///* 拖动类型*////
-	FX_INT16 m_ARM_CMD_ForceCtrl_Type; ///* 力控类型*////
-	FX_FLOAT m_ARM_CMD_Force_Dir[5];   ///* 力控方向IJKFR*////
-	FX_FLOAT m_ARM_CMD_Torque_Dir[5];  ///* 扭矩方向RIJKNR*////
-
+	FX_INT16 m_ARM_CMD_Ctrl_DragType;	   ///* 拖动类型*////
+	FX_INT16 m_ARM_CMD_Ctrl_ForceType; ///* 力控类型*////
+	FX_FLOAT m_ARM_CMD_Ctrl_ForceDir[5];   ///* 力控方向IJKFR*////
+	FX_FLOAT m_ARM_CMD_Ctrl_TorqueDir[5];  ///* 扭矩方向RIJKNR*////
 } ARM_IN;
 
 typedef struct
 {
-	FX_FLOAT m_ARM_FB_Joint_Pos[7];		///* 反馈关节位置 *////
-	FX_FLOAT m_ARM_FB_Joint_Vel[7];		///* 反馈关节速度 *////
-	FX_FLOAT m_ARM_FB_Joint_Cmd[7];		///* 位置关节指令 *////
-	FX_FLOAT m_ARM_FB_Joint_SToq[7];	///* 反馈关节扭矩 *////
-	FX_FLOAT m_ARM_FB_Joint_EST_Toq[7]; ///* 关节力扰动估计值 *////
-	FX_FLOAT m_ARM_FB_Base_EST_FN[6];	///* 基座力和扭矩 *////
-	FX_FLOAT m_ARM_FB_Base_GYRO[6];		///* ACCX,ACCY,ACCZ,OMGX,OMGY,OMGZ*////
-	FX_FLOAT m_ARM_FB_Flang_SSR[6];		///* 末端六维力传感器*////
+	FX_FLOAT m_ARM_FBK_Joint_Pos[7];		///* 反馈关节位置 *////
+	FX_FLOAT m_ARM_FBK_Joint_Vel[7];		///* 反馈关节速度 *////
+	FX_FLOAT m_ARM_FBK_Joint_Cmd[7];		///* 位置关节指令 *////
+	FX_FLOAT m_ARM_FBK_Joint_SensorTor[7];	///* 反馈关节扭矩 *////
+	FX_FLOAT m_ARM_FBK_Joint_ExternalTorEst[7]; ///* 关节力扰动估计值 *////
+	FX_FLOAT m_ARM_FBK_Base_FNEst[6];	///* 基座力和扭矩 *////
+	FX_FLOAT m_ARM_FBK_Base_Gyro[6];		///* ACCX,ACCY,ACCZ,OMGX,OMGY,OMGZ*////
+	FX_FLOAT m_ARM_FBK_Flange_FTSensor[6];		///* 末端六维力传感器*////
 } ARM_OUT;
 
 typedef struct
 {
-	FX_FLOAT m_ARM_GET_Joint_CToq[7]; ///* 反馈关节扭矩 *////
-	FX_FLOAT m_ARM_GET_Joint_PosE[7]; ///* 反馈关节位置(外编) *////
-	FX_CHAR m_ARM_GET_TipDI;
-	FX_CHAR m_ARM_GET_LowSpdFlag;
-	FX_CHAR m_ARM_GET_TrajState; /// 0: no traj; 1: receving; 2: recevied; >=3: running traj
+	FX_FLOAT m_ARM_FBK_Joint_Tor[7]; ///* 反馈关节扭矩 *////
+	FX_FLOAT m_ARM_FBK_Joint_ExtPos[7]; ///* 反馈关节位置(外编) *////
+	FX_CHAR m_ARM_FBK_Flange_DI;
+	FX_CHAR m_ARM_FBK_LowSpdFlag;
+	FX_CHAR m_ARM_FBK_TrajState; /// 0: no traj; 1: receving; 2: recevied; >=3: running traj
 	FX_CHAR m_pad[1];
 } ARM_GET;
 typedef struct
 {
-	FX_INT32 m_ARM_SET_ImpType;		  ///* 阻抗类型 *////
-	FX_FLOAT m_ARM_SET_Vel_Ratio;	  ///* 关节速度限制百分比*////
-	FX_FLOAT m_ARM_SET_Acc_Ratio;	  ///* 关节加速度限制百分比*////
-	FX_FLOAT m_ARM_SET_Joint_K[7];	  ///* 关节阻抗刚度K指令*////
-	FX_FLOAT m_ARM_SET_Joint_D[7];	  ///* 关节阻抗阻尼D指令*////
-	FX_FLOAT m_ARM_SET_Cart_K[7];	  ///* 坐标阻抗刚度K指令*////
-	FX_FLOAT m_ARM_SET_Cart_D[7];	  ///* 坐标阻抗阻尼D指令*////
-	FX_FLOAT m_ARM_SET_Tool_Kine[6];  ///* 工具运动学参数*////
-	FX_FLOAT m_ARM_SET_Tool_Dyna[10]; ///* 工具动力学参数*////
+	FX_INT32 m_ARM_Ctrl_ImpType;		  ///* 阻抗类型 *////
+	FX_FLOAT m_ARM_Ctrl_VelRatio;	  ///* 关节速度限制百分比*////
+	FX_FLOAT m_ARM_Ctrl_AccRatio;	  ///* 关节加速度限制百分比*////
+	FX_FLOAT m_ARM_Ctrl_JointK[7];	  ///* 关节阻抗刚度K指令*////
+	FX_FLOAT m_ARM_Ctrl_JointD[7];	  ///* 关节阻抗阻尼D指令*////
+	FX_FLOAT m_ARM_Ctrl_CartK[7];	  ///* 坐标阻抗刚度K指令*////
+	FX_FLOAT m_ARM_Ctrl_CartD[7];	  ///* 坐标阻抗阻尼D指令*////
+	FX_FLOAT m_ARM_Ctrl_ToolKine[6];  ///* 工具运动学参数*////
+	FX_FLOAT m_ARM_Ctrl_ToolDyna[10]; ///* 工具动力学参数*////
 	FX_BOOL m_ARM_SET_SetTags[16];
 	FX_BOOL m_ARM_SET_UpDateTag[16];
 } ARM_SET;
 
 typedef struct
 {
-	FX_FLOAT m_HEAD_CMD_Pos[3];
+	FX_FLOAT m_HEAD_CMD_Joint_Pos[3];
 } HEAD_IN;
 typedef struct
 {
-	FX_FLOAT m_HEAD_FB_Pos[3];
+	FX_FLOAT m_HEAD_FBK_Joint_Pos[3];
 } HEAD_OUT;
 
 typedef struct
 {
-	FX_FLOAT m_HEAD_GET_CToq[3]; ///* 电流 *////
-	FX_FLOAT m_HEAD_GET_PosE[3]; ///* 反馈关节位置(外编) *////
+	FX_FLOAT m_HEAD_FBK_Joint_Tor[3]; ///* 电流 *////
+	FX_FLOAT m_HEAD_FBK_Joint_ExtPos[3]; ///* 反馈关节位置(外编) *////
 } HEAD_GET;
 
 typedef struct
 {
-	FX_FLOAT m_HEAD_SET_VelRatio;
-	FX_FLOAT m_HEAD_SET_AccRatio;
+	FX_FLOAT m_HEAD_Ctrl_VelRatio;
+	FX_FLOAT m_HEAD_Ctrl_AccRatio;
 	FX_BOOL m_HEAD_SET_SetTags[4];
 	FX_BOOL m_HEAD_SET_UpDateTag[4];
 } HEAD_SET;
 
 typedef struct
 {
-	FX_FLOAT m_LIFT_CMD_Pos[2];
+	FX_FLOAT m_LIFT_CMD_Joint_Pos[2];
 } LIFT_IN;
 typedef struct
 {
-	FX_FLOAT m_LIFT_FB_Pos[2];
+	FX_FLOAT m_LIFT_FBK_Joint_Pos[2];
 } LIFT_OUT;
 
 typedef struct
 {
-	FX_FLOAT m_LIFT_GET_CToq[2];  ///* 电流 *////
-	FX_CHAR m_LIFT_GET_TrajState; /// 0: no traj; 1: receving; 2: recevied; >=3: running traj
+	FX_FLOAT m_LIFT_FBK_Joint_Tor[2];  ///* 电流 *////
+	FX_CHAR m_LIFT_FBK_TrajState; /// 0: no traj; 1: receving; 2: recevied; >=3: running traj
 	FX_CHAR m_pad[3];
 } LIFT_GET;
 
 typedef struct
 {
-	FX_FLOAT m_LIFT_SET_VelRatio;
-	FX_FLOAT m_LIFT_SET_AccRatio;
+	FX_FLOAT m_LIFT_Ctrl_VelRatio;
+	FX_FLOAT m_LIFT_Ctrl_AccRatio;
 	FX_BOOL m_LIFT_SET_SetTags[4];
 	FX_BOOL m_LIFT_SET_UpDateTag[4];
 } LIFT_SET;
 
 typedef struct
 {
-	FX_INT32 m_BODY_CMD_CtrlType;
-	FX_FLOAT m_BODY_CMD_Pos[6];
+	FX_INT32 m_BODY_CMD_Ctrl_Type;
+	FX_FLOAT m_BODY_CMD_Joint_Pos[6];
 } BODY_IN;
 typedef struct
 {
-	FX_FLOAT m_BODY_FB_Pos[6];
-	FX_FLOAT m_BODY_FB_Vel[6];
-	FX_FLOAT m_BODY_FB_STorq[6];
-	FX_FLOAT m_BODY_FB_GYRO[6];
+	FX_FLOAT m_BODY_FBK_Joint_Pos[6];
+	FX_FLOAT m_BODY_FBK_Joint_Vel[6];
+	FX_FLOAT m_BODY_FBK_Joint_SensorTor[6];
+	FX_FLOAT m_BODY_FBK_Base_Gyro[6];
 } BODY_OUT;
 
 typedef struct
 {
-	FX_FLOAT m_BODY_GET_CToq[6];  ///* 电流 *////
-	FX_FLOAT m_BODY_GET_PosE[6];  ///* 反馈关节位置(外编) *////
-	FX_CHAR m_BODY_GET_TrajState; /// 0: no traj; 1: receving; 2: recevied; >=3: running traj
+	FX_FLOAT m_BODY_FBK_Joint_Tor[6];  ///* 电流 *////
+	FX_FLOAT m_BODY_FBK_Joint_ExtPos[6];  ///* 反馈关节位置(外编) *////
+	FX_CHAR m_BODY_FBK_TrajState; /// 0: no traj; 1: receving; 2: recevied; >=3: running traj
 	FX_CHAR m_pad[3];
 } BODY_GET;
 
 typedef struct
 {
-	FX_FLOAT m_BODY_SET_VelRatio;
-	FX_FLOAT m_BODY_SET_AccRatio;
-	FX_FLOAT m_BODY_SET_PDK[6];
-	FX_FLOAT m_BODY_SET_PDD[6];
+	FX_FLOAT m_BODY_Ctrl_VelRatio;
+	FX_FLOAT m_BODY_Ctrl_AccRatio;
+	FX_FLOAT m_BODY_Ctrl_PDK[6];
+	FX_FLOAT m_BODY_Ctrl_PDD[6];
 	FX_BOOL m_BODY_SET_SetTags[6];
 	FX_BOOL m_BODY_SET_UpDateTag[6];
 } BODY_SET;
 
 typedef struct
 {
-	FX_INT16 m_HAND_CMD_Pos[24];
-	FX_INT16 m_HAND_CMD_Toq[24];
+	FX_INT16 m_HAND_CMD_Joint_Pos[24];
+	FX_INT16 m_HAND_CMD_Joint_Tor[24];
 } HAND_IN;
 
 typedef struct
 {
-	FX_INT16 m_HAND_FB_Poq[24];
-	FX_INT16 m_HAND_FB_Toq[24];
-	FX_INT16 m_HAND_FB_F[24];
+	FX_INT16 m_HAND_FBK_Joint_Pos[24];
+	FX_INT16 m_HAND_FBK_Joint_Tor[24];
+	FX_INT16 m_HAND_FBK_F[24];
 } HAND_OUT;
 
 typedef struct
 {
-	FX_INT16 m_HAND_SET_KP[24];
-	FX_INT16 m_HAND_SET_KD[24];
-	FX_INT16 m_HAND_SET_VEL[24];
+	FX_INT16 m_HAND_Ctrl_KP[24];
+	FX_INT16 m_HAND_Ctrl_KD[24];
+	FX_INT16 m_HAND_Ctrl_Vel[24];
 } HAND_SET;
 
 typedef struct
@@ -317,29 +322,29 @@ typedef struct
 typedef struct
 {
 	StateCtr m_HEAD_State; ///* 头状态 *////
-	HEAD_IN m_HEAD_In;
-	HEAD_OUT m_HEAD_Out;
+	HEAD_IN m_HEAD_IN;
+	HEAD_OUT m_HEAD_OUT;
 } HEAD_RT;
 
 typedef struct
 {
 	StateCtr m_BODY_State; ///* 身体状态 *////
-	BODY_IN m_BODY_In;
-	BODY_OUT m_BODY_Out;
+	BODY_IN m_BODY_IN;
+	BODY_OUT m_BODY_OUT;
 } BODY_RT;
 
 typedef struct
 {
 	StateCtr m_HAND_State; ///* 灵巧手状态 *////
-	HAND_IN m_HAND_In;
-	HAND_OUT m_HAND_Out;
+	HAND_IN m_HAND_IN;
+	HAND_OUT m_HAND_OUT;
 } HAND_RT;
 
 typedef struct
 {
 	StateCtr m_LIFT_State; ///* 头状态 *////
-	LIFT_IN m_LIFT_In;
-	LIFT_OUT m_LIFT_Out;
+	LIFT_IN m_LIFT_IN;
+	LIFT_OUT m_LIFT_OUT;
 } LIFT_RT;
 
 typedef struct
@@ -388,7 +393,7 @@ typedef enum
 
 	// Arm0
 	OPINS_ARM0_RESET = 100,				  // Input: null; Output: null
-	OPINS_ARM0_EMCY = 101,				  // Input: null; Output: null
+	OPINS_ARM0_DISABLE_SOFTLIMIT = 101,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_ARM0_BRAKE_LOCK = 102,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_ARM0_BRAKE_UNLOCK = 103,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_ARM0_ENC_RESET_OFFSET = 104,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
@@ -402,13 +407,12 @@ typedef enum
 	OPINS_ARM0_SENSOR5_SET_OFFSET = 112,  // Input: m_OpValueI, sensor offset; Output: null
 	OPINS_ARM0_SENSOR6_SET_OFFSET = 113,  // Input: m_OpValueI, sensor offset; Output: null
 	OPINS_ARM0_SENSOR7_SET_OFFSET = 114,  // Input: m_OpValueI, sensor offset; Output: null
-	OPINS_ARM0_DISABLE_SOFTLIMIT = 115,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 
 	OPINS_ARM0_SERVO_GET_ERROR_CODE = 150, // Input: m_OpValueI, servo id; Output: m_OpValueI, servo error code
 
 	// Arm1
 	OPINS_ARM1_RESET = 200,				  // Input: null; Output: null
-	OPINS_ARM1_EMCY = 201,				  // Input: null; Output: null
+	OPINS_ARM1_DISABLE_SOFTLIMIT = 201,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_ARM1_BRAKE_LOCK = 202,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_ARM1_BRAKE_UNLOCK = 203,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_ARM1_ENC_RESET_OFFSET = 204,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
@@ -422,25 +426,23 @@ typedef enum
 	OPINS_ARM1_SENSOR5_SET_OFFSET = 212,  // Input: m_OpValueI, sensor offset; Output: null
 	OPINS_ARM1_SENSOR6_SET_OFFSET = 213,  // Input: m_OpValueI, sensor offset; Output: null
 	OPINS_ARM1_SENSOR7_SET_OFFSET = 214,  // Input: m_OpValueI, sensor offset; Output: null
-	OPINS_ARM1_DISABLE_SOFTLIMIT = 215,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 
 	OPINS_ARM1_SERVO_GET_ERROR_CODE = 250, // Input: m_OpValueI, servo id; Output: m_OpValueI, servo error code
 
 	// Head
 	OPINS_HEAD_RESET = 300,				  // Input: null; Output: null
-	OPINS_HEAD_EMCY = 301,				  // Input: null; Output: null
+	OPINS_HEAD_DISABLE_SOFTLIMIT = 301,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_HEAD_BRAKE_LOCK = 302,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_HEAD_BRAKE_UNLOCK = 303,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_HEAD_ENC_RESET_OFFSET = 304,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_HEAD_ENC_CLEAR_ERROR = 305,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_HEAD_EXTENC_RESET_OFFSET = 306, // Input: m_OpValueI, bit0~7 for each extenc; Output: null
-	OPINS_HEAD_DISABLE_SOFTLIMIT = 315,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 
 	OPINS_HEAD_SERVO_GET_ERROR_CODE = 350, // Input: m_OpValueI, servo id; Output: m_OpValueI, servo error code
 
 	// Body
 	OPINS_BODY_RESET = 400,				  // Input: null; Output: null
-	OPINS_BODY_EMCY = 401,				  // Input: null; Output: null
+	OPINS_BODY_DISABLE_SOFTLIMIT = 401,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_BODY_BRAKE_LOCK = 402,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_BODY_BRAKE_UNLOCK = 403,		  // Input: m_OpValueI, bit0~7 for each axis; Output: null
 	OPINS_BODY_ENC_RESET_OFFSET = 404,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
@@ -454,16 +456,14 @@ typedef enum
 	OPINS_BODY_SENSOR5_SET_OFFSET = 412,  // Input: m_OpValueI, sensor offset; Output: null
 	OPINS_BODY_SENSOR6_SET_OFFSET = 413,  // Input: m_OpValueI, sensor offset; Output: null
 	OPINS_BODY_SENSOR7_SET_OFFSET = 414,  // Input: m_OpValueI, sensor offset; Output: null
-	OPINS_BODY_DISABLE_SOFTLIMIT = 415,	  // Input: m_OpValueI, bit0~7 for each enc; Output: null
 
 	OPINS_BODY_SERVO_GET_ERROR_CODE = 450, // Input: m_OpValueI, servo id; Output: m_OpValueI, servo error code
 
 	// Lift
 	OPINS_LIFT_RESET = 500,				// Input: null; Output: null
-	OPINS_LIFT_EMCY = 501,				// Input: null; Output: null
+	OPINS_LIFT_DISABLE_SOFTLIMIT = 501, // Input: m_OpValueI, bit0~7 for each enc; Output: null
 	OPINS_LIFT_ENC_RESET_OFFSET = 504,	// Input: m_OpValueI, bit0 used; Output: null
 	OPINS_LIFT_ENC_CLEAR_ERROR = 505,	// Input: m_OpValueI, bit0 used; Output: null
-	OPINS_LIFT_DISABLE_SOFTLIMIT = 515, // Input: m_OpValueI, bit0~7 for each enc; Output: null
 
 	OPINS_LIFT_SERVO_GET_ERROR_CODE = 550, // Input: m_OpValueI, servo id; Output: m_OpValueI, servo error code
 

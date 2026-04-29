@@ -64,7 +64,7 @@ static bool strSpliteSRS(const string& str, vector<vector<string>>& loadData)
 		cout << "ERROR:data must be 7  columns" << endl;
 		return false;
 	}
-	for (int i = 0; i < loadData.size(); i++) {
+	for (size_t i = 0; i < loadData.size(); i++) {
 		loadData.at(i).push_back(deqItem.at(i));
 	}
 	return true;
@@ -172,7 +172,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[0] = dtemp / vecTor.size();
@@ -206,7 +206,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[1] = dtemp / vecTor.size();
@@ -240,7 +240,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[2] = dtemp / vecTor.size();
@@ -274,7 +274,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[3] = dtemp / vecTor.size();
@@ -314,7 +314,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[6] = dtemp / vecTor.size();
@@ -352,7 +352,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[5] = dtemp / vecTor.size();
@@ -393,7 +393,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 		cout << "ERROR: insufficient effective data, pls check LoadData.csv or NoLoadData.csv" << endl;
 		return LOAD_IDEN_DataSmpErr;
 	}
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[4] = dtemp / vecTor.size();
@@ -412,7 +412,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinSRS(LoadTor* tor, int isNoLoad, const char 
 			cout << "ERROR: pls check ./LoadData/CfgFileLoadIdenCfg" << endl;
 			return LOAD_IDEN_OpenCfgFileErr;
 		}
-		for (int i = 0; i < vecCon.size() - 1; i++) {
+		for (size_t i = 0; i + 1 < vecCon.size(); i++) {
 			if (!(ofsConFile << vecCon.at(i) << ",")) {
 				cout << "ERROR: pls check ./LoadData/CfgFileLoadIdenCfg" << endl;
 				return LOAD_IDEN_OpenCfgFileErr;
@@ -489,12 +489,10 @@ LoadIdenErrCode OnCalLoadDynamic_7_MarvinSRS(LoadDynamic* loadDyn, const char *u
 	iyy6 = fabs(iyy_tor6 / acc);
 	icyy = iyy6 - me * (z5 * z5 + mrx * mrx);
 	double iyy = icyy + me * (z * z + mrx * mrx);
-	double izz, iczz;
+	double izz;
 	double izz_tor7;
 	izz_tor7 = loadTor.torLoad[6] - loadTor.torNoLoad[6];
 	izz = fabs(izz_tor7 / acc);
-	iczz = izz - me * (r * r);
-
 	if (loadDyn == NULL) {
 		cout << "ERROR: load identification failed!" << endl;
 		return LOAD_IDEN_CalErr;
@@ -540,7 +538,7 @@ static bool strSpliteCCS(const string& str, vector<vector<string>>& loadData)
 		cout << "Data must be 9 columns" << endl;
 		return false;
 	}
-	for (int i = 0; i < loadData.size(); i++) {
+	for (size_t i = 0; i < loadData.size(); i++) {
 		loadData.at(i).push_back(deqItem.at(i));
 	}
 	return true;
@@ -637,7 +635,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[0] = dtemp / vecTor.size();
@@ -671,7 +669,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[1] = dtemp / vecTor.size();
@@ -705,7 +703,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[2] = dtemp / vecTor.size();
@@ -739,7 +737,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[3] = dtemp / vecTor.size();
@@ -779,7 +777,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[4] = dtemp / vecTor.size();
@@ -817,7 +815,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		}
 	}
 	dtemp = 0;
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[5] = dtemp / vecTor.size();
@@ -861,7 +859,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 		return LOAD_IDEN_DataSmpErr;
 	}
 
-	for (int num = 0; num < vecTor.size(); num++) {
+	for (size_t num = 0; num < vecTor.size(); num++) {
 		dtemp += vecTor.at(num);
 	}
 	tor7[6] = dtemp / vecTor.size();
@@ -880,7 +878,7 @@ LoadIdenErrCode OnCalLoadTor_7_MarvinCCS(LoadTor* tor, int isNoLoad, const char 
 			cout << "ERROR: open cfg file failed, pls check LoadIdenCfg" << endl;
 			return LOAD_IDEN_DataSmpErr;
 		}
-		for (int i = 0; i < vecCon.size() - 1; i++) {
+		for (size_t i = 0; i + 1 < vecCon.size(); i++) {
 			if (!(ofsConFile << vecCon.at(i) << ",")) {
 				cout << "ERROR: write cfg file failed, pls check LoadIdenCfg" << endl;
 				return LOAD_IDEN_DataSmpErr;
@@ -946,11 +944,10 @@ LoadIdenErrCode OnCalLoadDynamic_7_MarvinCCS(LoadDynamic* loadDyn, const char *u
 	double mrz = -r * sin(theta);
 	double mry = -r * cos(theta);
 	double x5 = x + l7;
-	double ixx, icxx;
+	double ixx;
 	double ixx_tor6;
 	ixx_tor6 = loadTor.torLoad[4] - loadTor.torNoLoad[4];
 	ixx = fabs(ixx_tor6 / acc);
-	icxx = ixx - me * (r * r);
 	double iyy6, icyy;
 	double iyy_tor6;
 	iyy_tor6 = loadTor.torLoad[5] - loadTor.torNoLoad[5];

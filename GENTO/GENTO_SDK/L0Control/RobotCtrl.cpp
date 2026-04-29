@@ -250,7 +250,7 @@ FX_INT32 RobotCtrl::WaitSend(FX_UINT32 timeout)
 ////////////////////////
 FX_INT32 RobotCtrl::System_GetVersion()
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -270,29 +270,16 @@ FX_INT32 RobotCtrl::System_GetVersion()
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
 
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				return m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-			}
-			else
-			{
-				return -1;
-			}
-		}
+		return -1;
 	}
-	return -2;
+	return ins->m_RobotSG.m_OP_SET.m_OpValueI;
 }
 
 FX_BOOL RobotCtrl::System_Reboot()
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(100))
 	{
 		return FX_FALSE;
 	}
@@ -317,7 +304,7 @@ FX_BOOL RobotCtrl::System_Reboot()
 ////////////////////////
 FX_BOOL RobotCtrl::Para_GetInt(FX_CHAR name[30], FX_INT32 *ret_value)
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -338,30 +325,17 @@ FX_BOOL RobotCtrl::Para_GetInt(FX_CHAR name[30], FX_INT32 *ret_value)
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
 
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*ret_value = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*ret_value = ins->m_RobotSG.m_OP_SET.m_OpValueI;
+	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Para_GetFloat(FX_CHAR name[30], FX_FLOAT *ret_value)
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -372,7 +346,7 @@ FX_BOOL RobotCtrl::Para_GetFloat(FX_CHAR name[30], FX_FLOAT *ret_value)
 	{
 		ins->m_ParaSerial = 1;
 	}
-	long serial = ins->m_ParaSerial;
+	FX_INT32 serial = ins->m_ParaSerial;
 	OP_SET buf;
 	memset(&buf, 0, sizeof(OP_SET));
 	buf.m_OpCmdSerial = serial;
@@ -382,30 +356,17 @@ FX_BOOL RobotCtrl::Para_GetFloat(FX_CHAR name[30], FX_FLOAT *ret_value)
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
 
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*ret_value = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueF;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*ret_value = ins->m_RobotSG.m_OP_SET.m_OpValueF;
+	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Para_SetInt(FX_CHAR name[30], FX_INT32 target_value)
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (ClearSend(500) == FX_FALSE)
 	{
 		return FX_FALSE;
 	}
@@ -426,30 +387,12 @@ FX_BOOL RobotCtrl::Para_SetInt(FX_CHAR name[30], FX_INT32 target_value)
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
-	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
-	}
-	return FX_FALSE;
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Para_SetFloat(FX_CHAR name[30], FX_FLOAT target_value)
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (ClearSend(500) == FX_FALSE)
 	{
 		return FX_FALSE;
 	}
@@ -465,35 +408,17 @@ FX_BOOL RobotCtrl::Para_SetFloat(FX_CHAR name[30], FX_FLOAT target_value)
 	memset(&buf, 0, sizeof(OP_SET));
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_PARAM_SET_FLOAT;
-	buf.m_OpValueI = target_value;
+	buf.m_OpValueF = target_value;
 	memcpy(buf.m_OpValueS, name, 30);
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
-	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
-	}
-	return FX_FALSE;
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Para_Save()
 {
-	if (ClearSend(100) == FX_FALSE)
+	if (ClearSend(500) == FX_FALSE)
 	{
 		return FX_FALSE;
 	}
@@ -512,69 +437,45 @@ FX_BOOL RobotCtrl::Para_Save()
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
-	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
-	}
-	return FX_FALSE;
+	return ins->WaitOpReturn(serial, 500);
 }
 
 ///////////////////////
 FX_BOOL RobotCtrl::Arm0_Terminal_ClearData()
 {
-	if (m_InsRobot == NULL)
-	{
-		return FX_FALSE;
-	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
 	DDSS t;
 	FX_INT32 si = sizeof(DDSS);
-	FX_INT32 num = m_InsRobot->m_ACB1.ReadBuf((FX_UCHAR *)&t, si);
+	FX_INT32 num = ins->m_ACB1.ReadBuf((FX_UCHAR *)&t, si);
 	while (num > 0)
 	{
-		num = m_InsRobot->m_ACB1.ReadBuf((FX_UCHAR *)&t, si);
+		num = ins->m_ACB1.ReadBuf((FX_UCHAR *)&t, si);
 	}
 	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Arm1_Terminal_ClearData()
 {
-	if (m_InsRobot == NULL)
-	{
-		return FX_FALSE;
-	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
 	DDSS t;
 	FX_INT32 si = sizeof(DDSS);
-	FX_INT32 num = m_InsRobot->m_ACB2.ReadBuf((FX_UCHAR *)&t, si);
+	FX_INT32 num = ins->m_ACB2.ReadBuf((FX_UCHAR *)&t, si);
 	while (num > 0)
 	{
-		num = m_InsRobot->m_ACB2.ReadBuf((FX_UCHAR *)&t, si);
+		num = ins->m_ACB2.ReadBuf((FX_UCHAR *)&t, si);
 	}
 	return FX_TRUE;
 }
 
 FX_INT32 RobotCtrl::Arm0_Terminal_GetData(FX_INT32 *channel_type_ptr, FX_UCHAR data_ptr[64])
 {
-	if (m_InsRobot == NULL)
-	{
-		return 0;
-	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
 	DDSS t;
 	FX_INT32 si = sizeof(DDSS);
-	FX_INT32 num = m_InsRobot->m_ACB1.ReadBuf((FX_UCHAR *)&t, si);
+	FX_INT32 num = ins->m_ACB1.ReadBuf((FX_UCHAR *)&t, si);
 	if (num == 0)
 	{
 		return num;
@@ -587,13 +488,11 @@ FX_INT32 RobotCtrl::Arm0_Terminal_GetData(FX_INT32 *channel_type_ptr, FX_UCHAR d
 
 FX_INT32 RobotCtrl::Arm1_Terminal_GetData(FX_INT32 *channel_type_ptr, FX_UCHAR data_ptr[64])
 {
-	if (m_InsRobot == NULL)
-	{
-		return 0;
-	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
 	DDSS t;
 	FX_INT32 si = sizeof(DDSS);
-	FX_INT32 num = m_InsRobot->m_ACB2.ReadBuf((FX_UCHAR *)&t, si);
+	FX_INT32 num = ins->m_ACB2.ReadBuf((FX_UCHAR *)&t, si);
 	if (num == 0)
 	{
 		return num;
@@ -606,62 +505,50 @@ FX_INT32 RobotCtrl::Arm1_Terminal_GetData(FX_INT32 *channel_type_ptr, FX_UCHAR d
 
 FX_BOOL RobotCtrl::Arm0_Terminal_SetData(FX_INT32 channel_type, FX_UCHAR *data_ptr, FX_INT32 data_len)
 {
-	if (m_InsRobot == NULL)
-	{
-		return 0;
-	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
 	if (data_len <= 0 || data_len > 256)
 	{
 		return FX_FALSE;
 	}
-	if (m_InsRobot == NULL)
-	{
-		return FX_FALSE;
-	}
 
-	long serial = m_InsRobot->pDDSS1->m_Serial + 1;
+	FX_INT32 serial = m_InsRobot->pDDSS1->m_Serial + 1;
 	if (serial > 1000000)
 	{
 		serial = 1;
 	}
-	m_InsRobot->pDDSS1->m_Serial = serial;
-	m_InsRobot->pDDSS1->m_Size = data_len;
-	m_InsRobot->pDDSS1->m_SUB_CH = channel_type;
-	memcpy(m_InsRobot->pDDSS1->m_Data, data_ptr, data_len);
-	memcpy(m_InsRobot->m_Flange_NA0.m_buf.m_SendBuf, (FX_UCHAR *)m_InsRobot->pDDSS1, sizeof(DDSS));
-	m_InsRobot->m_Flange_NA0.m_buf.m_Slen = sizeof(DDSS);
-	m_InsRobot->m_Flange_NA0.m_buf.m_STag = 100;
-	return m_InsRobot->m_Flange_NA0.OnSendRaw();
+	ins->pDDSS1->m_Serial = serial;
+	ins->pDDSS1->m_Size = data_len;
+	ins->pDDSS1->m_SUB_CH = channel_type;
+	memcpy(ins->pDDSS1->m_Data, data_ptr, data_len);
+	memcpy(ins->m_Flange_NA0.m_buf.m_SendBuf, (FX_UCHAR *)ins->pDDSS1, sizeof(DDSS));
+	ins->m_Flange_NA0.m_buf.m_Slen = sizeof(DDSS);
+	ins->m_Flange_NA0.m_buf.m_STag = 100;
+	return ins->m_Flange_NA0.OnSendRaw();
 }
 
 FX_BOOL RobotCtrl::Arm1_Terminal_SetData(FX_INT32 channel_type, FX_UCHAR *data_ptr, FX_INT32 data_len)
 {
-	if (m_InsRobot == NULL)
-	{
-		return 0;
-	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
 	if (data_len <= 0 || data_len > 256)
 	{
 		return FX_FALSE;
 	}
-	if (m_InsRobot == NULL)
-	{
-		return FX_FALSE;
-	}
 
-	long serial = m_InsRobot->pDDSS1->m_Serial + 1;
+	long serial = ins->pDDSS2->m_Serial + 1;
 	if (serial > 1000000)
 	{
 		serial = 1;
 	}
-	m_InsRobot->pDDSS2->m_Serial = serial;
-	m_InsRobot->pDDSS2->m_Size = data_len;
-	m_InsRobot->pDDSS2->m_SUB_CH = channel_type;
-	memcpy(m_InsRobot->pDDSS2->m_Data, data_ptr, data_len);
-	memcpy(m_InsRobot->m_Flange_NA1.m_buf.m_SendBuf, (unsigned char *)m_InsRobot->pDDSS2, sizeof(DDSS));
-	m_InsRobot->m_Flange_NA1.m_buf.m_Slen = sizeof(DDSS);
-	m_InsRobot->m_Flange_NA1.m_buf.m_STag = 100;
-	return m_InsRobot->m_Flange_NA1.OnSendRaw();
+	ins->pDDSS2->m_Serial = serial;
+	ins->pDDSS2->m_Size = data_len;
+	ins->pDDSS2->m_SUB_CH = channel_type;
+	memcpy(ins->pDDSS2->m_Data, data_ptr, data_len);
+	memcpy(ins->m_Flange_NA1.m_buf.m_SendBuf, (unsigned char *)m_InsRobot->pDDSS2, sizeof(DDSS));
+	ins->m_Flange_NA1.m_buf.m_Slen = sizeof(DDSS);
+	ins->m_Flange_NA1.m_buf.m_STag = 100;
+	return ins->m_Flange_NA1.OnSendRaw();
 }
 
 ///////////////////////
@@ -672,7 +559,7 @@ FX_BOOL RobotCtrl::Arm0_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 	{
 		return FX_FALSE;
 	}
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -693,25 +580,12 @@ FX_BOOL RobotCtrl::Arm0_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
 
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
+	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Arm1_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code)
@@ -720,7 +594,7 @@ FX_BOOL RobotCtrl::Arm1_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 	{
 		return FX_FALSE;
 	}
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -740,26 +614,12 @@ FX_BOOL RobotCtrl::Arm1_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
+	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Head_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code)
@@ -768,7 +628,7 @@ FX_BOOL RobotCtrl::Head_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 	{
 		return FX_FALSE;
 	}
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -788,26 +648,12 @@ FX_BOOL RobotCtrl::Head_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
+	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Body_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code)
@@ -816,7 +662,7 @@ FX_BOOL RobotCtrl::Body_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 	{
 		return FX_FALSE;
 	}
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -836,26 +682,12 @@ FX_BOOL RobotCtrl::Body_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
+	return FX_TRUE;
 }
 
 FX_BOOL RobotCtrl::Lift_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *error_code)
@@ -864,7 +696,7 @@ FX_BOOL RobotCtrl::Lift_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 	{
 		return FX_FALSE;
 	}
-	if (ClearSend(100) == FX_FALSE)
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -884,32 +716,22 @@ FX_BOOL RobotCtrl::Lift_State_GetServoErrorCode(FX_INT32 axis_id, FX_INT32 *erro
 
 	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
 	SetSend();
-
-	for (FX_INT32 i = 0; i < 50; i++)
+	if (!ins->WaitOpReturn(serial, 500))
 	{
-		CFXULT::UniMilliSleep(2);
-		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
-		if (ret_s % 100 == serial)
-		{
-			FX_INT32 ret_v = ret_s / 100;
-			if (ret_v == 0)
-			{
-				*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
-				return FX_TRUE;
-			}
-			else
-			{
-				return FX_FALSE;
-			}
-		}
+		return FX_FALSE;
 	}
-	return FX_FALSE;
+	*error_code = m_InsRobot->m_RobotSG.m_OP_SET.m_OpValueI;
+	return FX_TRUE;
 }
 
 ///////////////////////
 
 FX_BOOL RobotCtrl::Arm0_Config_SetBrakeLock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -923,11 +745,17 @@ FX_BOOL RobotCtrl::Arm0_Config_SetBrakeLock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_BRAKE_LOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm0_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -941,11 +769,17 @@ FX_BOOL RobotCtrl::Arm0_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_BRAKE_UNLOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm0_Config_ResetEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -959,11 +793,17 @@ FX_BOOL RobotCtrl::Arm0_Config_ResetEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_ENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 5000); // servo soft reset will consume more time
 }
 
 FX_BOOL RobotCtrl::Arm0_Config_ClearEncError(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -977,11 +817,17 @@ FX_BOOL RobotCtrl::Arm0_Config_ClearEncError(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_ENC_CLEAR_ERROR;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm0_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -995,11 +841,17 @@ FX_BOOL RobotCtrl::Arm0_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_EXTENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm0_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1013,12 +865,18 @@ FX_BOOL RobotCtrl::Arm0_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_DISABLE_SOFTLIMIT;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm0_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset)
 {
 	if (axis_id < 0 || axis_id >= 7)
+	{
+		return FX_FALSE;
+	}
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -1035,11 +893,17 @@ FX_BOOL RobotCtrl::Arm0_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_SENSOR0_SET_OFFSET + axis_id;
 	buf.m_OpValueI = offset;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_SetBrakeLock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1053,11 +917,17 @@ FX_BOOL RobotCtrl::Arm1_Config_SetBrakeLock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_BRAKE_LOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1071,11 +941,17 @@ FX_BOOL RobotCtrl::Arm1_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_BRAKE_UNLOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_ResetEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1089,11 +965,17 @@ FX_BOOL RobotCtrl::Arm1_Config_ResetEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_ENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 5000); // servo soft reset will consume more time
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_ClearEncError(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1107,11 +989,17 @@ FX_BOOL RobotCtrl::Arm1_Config_ClearEncError(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_ENC_CLEAR_ERROR;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1125,11 +1013,17 @@ FX_BOOL RobotCtrl::Arm1_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_EXTENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1143,12 +1037,18 @@ FX_BOOL RobotCtrl::Arm1_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_DISABLE_SOFTLIMIT;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Arm1_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset)
 {
 	if (axis_id < 0 || axis_id >= 7)
+	{
+		return FX_FALSE;
+	}
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -1165,11 +1065,17 @@ FX_BOOL RobotCtrl::Arm1_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM1_SENSOR0_SET_OFFSET + axis_id;
 	buf.m_OpValueI = offset;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Head_Config_SetBrakeLock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1183,11 +1089,17 @@ FX_BOOL RobotCtrl::Head_Config_SetBrakeLock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_HEAD_BRAKE_LOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Head_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1201,11 +1113,17 @@ FX_BOOL RobotCtrl::Head_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_HEAD_BRAKE_UNLOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Head_Config_ResetEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1219,11 +1137,17 @@ FX_BOOL RobotCtrl::Head_Config_ResetEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_HEAD_ENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 5000);
 }
 
 FX_BOOL RobotCtrl::Head_Config_ClearEncError(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1237,11 +1161,17 @@ FX_BOOL RobotCtrl::Head_Config_ClearEncError(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_HEAD_ENC_CLEAR_ERROR;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Head_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1255,11 +1185,17 @@ FX_BOOL RobotCtrl::Head_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_HEAD_EXTENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Head_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1273,11 +1209,17 @@ FX_BOOL RobotCtrl::Head_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_HEAD_DISABLE_SOFTLIMIT;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Body_Config_SetBrakeLock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1291,11 +1233,17 @@ FX_BOOL RobotCtrl::Body_Config_SetBrakeLock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_BRAKE_LOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Body_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1309,11 +1257,17 @@ FX_BOOL RobotCtrl::Body_Config_SetBrakeUnlock(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_BRAKE_UNLOCK;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Body_Config_ResetEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1327,11 +1281,17 @@ FX_BOOL RobotCtrl::Body_Config_ResetEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_ENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 5000);
 }
 
 FX_BOOL RobotCtrl::Body_Config_ClearEncError(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1345,11 +1305,17 @@ FX_BOOL RobotCtrl::Body_Config_ClearEncError(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_ENC_CLEAR_ERROR;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Body_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1363,11 +1329,17 @@ FX_BOOL RobotCtrl::Body_Config_ResetExtEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_EXTENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Body_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1381,12 +1353,18 @@ FX_BOOL RobotCtrl::Body_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_DISABLE_SOFTLIMIT;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Body_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset)
 {
 	if (axis_id < 0 || axis_id >= 7)
+	{
+		return FX_FALSE;
+	}
+	if (!ClearSend(500))
 	{
 		return FX_FALSE;
 	}
@@ -1403,11 +1381,17 @@ FX_BOOL RobotCtrl::Body_Config_SetSensorOffset(FX_INT32 axis_id, FX_INT32 offset
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_BODY_SENSOR0_SET_OFFSET + axis_id;
 	buf.m_OpValueI = offset;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Lift_Config_ResetEncOffset(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1421,11 +1405,17 @@ FX_BOOL RobotCtrl::Lift_Config_ResetEncOffset(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_LIFT_ENC_RESET_OFFSET;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 FX_BOOL RobotCtrl::Lift_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1439,12 +1429,18 @@ FX_BOOL RobotCtrl::Lift_Config_DisableSoftLimit(FX_UINT8 axis_mask)
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_LIFT_DISABLE_SOFTLIMIT;
 	buf.m_OpValueI = axis_mask;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
 ///////////////////////
 FX_BOOL RobotCtrl::Arm0_State_Reset()
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1457,11 +1453,17 @@ FX_BOOL RobotCtrl::Arm0_State_Reset()
 	memset(&buf, 0, sizeof(OP_SET));
 	buf.m_OpCmdSerial = serial;
 	buf.m_OpIns = OPINS_ARM0_RESET;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
 }
 
-FX_BOOL RobotCtrl::Arm0_State_EmergencyStop()
+FX_BOOL RobotCtrl::Arm1_State_Reset()
 {
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
 	RobotCtrl *ins = RobotCtrl::GetIns();
 
 	ins->m_ParaSerial++;
@@ -1473,8 +1475,84 @@ FX_BOOL RobotCtrl::Arm0_State_EmergencyStop()
 	OP_SET buf;
 	memset(&buf, 0, sizeof(OP_SET));
 	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_ARM0_EMCY;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	buf.m_OpIns = OPINS_ARM1_RESET;
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
+}
+
+FX_BOOL RobotCtrl::Head_State_Reset()
+{
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
+	ins->m_ParaSerial++;
+	if (ins->m_ParaSerial >= 99)
+	{
+		ins->m_ParaSerial = 1;
+	}
+	FX_INT32 serial = ins->m_ParaSerial;
+	OP_SET buf;
+	memset(&buf, 0, sizeof(OP_SET));
+	buf.m_OpCmdSerial = serial;
+	buf.m_OpIns = OPINS_HEAD_RESET;
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
+}
+
+FX_BOOL RobotCtrl::Body_State_Reset()
+{
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
+	ins->m_ParaSerial++;
+	if (ins->m_ParaSerial >= 99)
+	{
+		ins->m_ParaSerial = 1;
+	}
+	FX_INT32 serial = ins->m_ParaSerial;
+	OP_SET buf;
+	memset(&buf, 0, sizeof(OP_SET));
+	buf.m_OpCmdSerial = serial;
+	buf.m_OpIns = OPINS_BODY_RESET;
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
+}
+
+FX_BOOL RobotCtrl::Lift_State_Reset()
+{
+	if (!ClearSend(500))
+	{
+		return FX_FALSE;
+	}
+	RobotCtrl *ins = RobotCtrl::GetIns();
+
+	ins->m_ParaSerial++;
+	if (ins->m_ParaSerial >= 99)
+	{
+		ins->m_ParaSerial = 1;
+	}
+	FX_INT32 serial = ins->m_ParaSerial;
+	OP_SET buf;
+	memset(&buf, 0, sizeof(OP_SET));
+	buf.m_OpCmdSerial = serial;
+	buf.m_OpIns = OPINS_LIFT_RESET;
+	SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	SetSend();
+	return ins->WaitOpReturn(serial, 500);
+}
+
+FX_BOOL RobotCtrl::Arm0_Runtime_EmergencyStop()
+{
+	return RobotCtrl::SetRawData(UDP_ARM0_SP_Emcy, 0, NULL);
 }
 
 FX_BOOL RobotCtrl::Arm0_Runtime_SetState(FX_INT32 state)
@@ -1618,38 +1696,9 @@ FX_BOOL RobotCtrl::Arm0_Runtime_StopTraj()
 	return SetIns(UDP_ARM0_SP_StopTraj);
 }
 
-FX_BOOL RobotCtrl::Arm1_State_Reset()
+FX_BOOL RobotCtrl::Arm1_Runtime_EmergencyStop()
 {
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_ARM1_RESET;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
-}
-
-FX_BOOL RobotCtrl::Arm1_State_EmergencyStop()
-{
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_ARM1_EMCY;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	return RobotCtrl::SetRawData(UDP_ARM1_SP_Emcy, 0, NULL);
 }
 
 FX_BOOL RobotCtrl::Arm1_Runtime_SetState(FX_INT32 state)
@@ -1742,13 +1791,13 @@ FX_BOOL RobotCtrl::Arm1_Runtime_SetImpType(FX_INT32 imp_type)
 	return RobotCtrl::SetInt(UDP_ARM1_SG_ImpType, 1, &imp_type);
 }
 
-FX_BOOL RobotCtrl::Arm1_Runtime_SetDragType(FX_INT32 drag_type)
+FX_BOOL RobotCtrl::Arm1_Runtime_SetDragType(FX_INT16 drag_type)
 {
 	if (drag_type < 0 || drag_type > 5)
 	{
 		return FX_FALSE;
 	}
-	return RobotCtrl::SetInt(UDP_ARM1_RT_DragType, 1, &drag_type);
+	return RobotCtrl::SetShortInt(UDP_ARM1_RT_DragType, 1, &drag_type);
 }
 
 FX_BOOL RobotCtrl::Arm1_Runtime_InitTraj(FX_INT32 point_num)
@@ -1793,38 +1842,9 @@ FX_BOOL RobotCtrl::Arm1_Runtime_StopTraj()
 	return SetIns(UDP_ARM1_SP_StopTraj);
 }
 
-FX_BOOL RobotCtrl::Head_State_Reset()
+FX_BOOL RobotCtrl::Head_Runtime_EmergencyStop()
 {
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_HEAD_RESET;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
-}
-
-FX_BOOL RobotCtrl::Head_State_EmergencyStop()
-{
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_HEAD_EMCY;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	return RobotCtrl::SetRawData(UDP_HEAD_SP_Emcy, 0, NULL);
 }
 
 FX_BOOL RobotCtrl::Head_Runtime_SetState(FX_INT32 state)
@@ -1863,38 +1883,9 @@ FX_BOOL RobotCtrl::Head_Runtime_SetAccRatio(FX_DOUBLE acc_ratio)
 	return RobotCtrl::SetFLoat(UDP_HEAD_SG_AccRatio, 1, &acc_ratio);
 }
 
-FX_BOOL RobotCtrl::Body_State_Reset()
+FX_BOOL RobotCtrl::Body_Runtime_EmergencyStop()
 {
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_BODY_RESET;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
-}
-
-FX_BOOL RobotCtrl::Body_State_EmergencyStop()
-{
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_BODY_EMCY;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	return RobotCtrl::SetRawData(UDP_BODY_SP_Emcy, 0, NULL);
 }
 
 FX_BOOL RobotCtrl::Body_Runtime_SetState(FX_INT32 state)
@@ -1984,38 +1975,9 @@ FX_BOOL RobotCtrl::Body_Runtime_StopTraj()
 	return SetIns(UDP_BODY_SP_StopTraj);
 }
 
-FX_BOOL RobotCtrl::Lift_State_Reset()
+FX_BOOL RobotCtrl::Lift_Runtime_EmergencyStop()
 {
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_LIFT_RESET;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
-}
-
-FX_BOOL RobotCtrl::Lift_State_EmergencyStop()
-{
-	RobotCtrl *ins = RobotCtrl::GetIns();
-
-	ins->m_ParaSerial++;
-	if (ins->m_ParaSerial >= 99)
-	{
-		ins->m_ParaSerial = 1;
-	}
-	FX_INT32 serial = ins->m_ParaSerial;
-	OP_SET buf;
-	memset(&buf, 0, sizeof(OP_SET));
-	buf.m_OpCmdSerial = serial;
-	buf.m_OpIns = OPINS_LIFT_EMCY;
-	return SetRawData(UDP_OPERATION, 44, (FX_UCHAR *)&buf);
+	return RobotCtrl::SetRawData(UDP_LIFT_SP_Emcy, 0, NULL);
 }
 
 FX_BOOL RobotCtrl::Lift_Runtime_SetState(FX_INT32 state)
@@ -2141,7 +2103,6 @@ FX_VOID RobotCtrl::DoRecv()
 	m_InsRobot->m_RT_NA.OnRecv();
 	while (m_InsRobot->m_RT_NA.m_buf.m_Rlen > 0)
 	{
-		// printf("===RTrecv:%d, serial=%d\n", m_RT_NA.m_buf.m_Rlen, *((FX_INT32 *)&m_InsRobot->m_RT_NA.m_buf.m_Recvbuf[2]));
 		if (m_InsRobot->m_RT_NA.m_buf.m_Rlen == robot_rt_size + 2)
 		{
 			m_InsRobot->m_RobotRTRecvTag = 1;
@@ -2159,7 +2120,7 @@ FX_VOID RobotCtrl::DoRecv()
 	m_InsRobot->m_SG_NA.OnRecv();
 	if (m_InsRobot->m_SG_NA.m_buf.m_Rlen > 0)
 	{
-		// printf("===SGrecv:%d, serial=%d\n", m_SG_NA.m_buf.m_Rlen, *((FX_INT32 *)&m_InsRobot->m_SG_NA.m_buf.m_Recvbuf[2]));
+
 		if (m_InsRobot->m_SG_NA.m_buf.m_Rlen == robot_sg_size + 2)
 		{
 			m_InsRobot->m_RobotSGRecvTag = 1;
@@ -2170,19 +2131,11 @@ FX_VOID RobotCtrl::DoRecv()
 			{
 				m_InsRobot->m_RobotSGUpdateTag = 100;
 			}
-			if (m_InsRobot->m_RobotSG.m_BODY.m_BODY_SET.m_BODY_SET_UpDateTag[2] == 1)
-			{
-				int a = 0;
-			}
 		}
 	}
-	// printf("7-----linktag=%u\n", m_InsRobot->IsLinked());
 	m_InsRobot->m_Flange_NA0.OnRecv();
-	// printf("---11\n");
-	// printf("===FG0:%d\n", m_InsRobot->m_Flange_NA0.m_buf.m_Rlen);
 	while (m_InsRobot->m_Flange_NA0.m_buf.m_Rlen > 0)
 	{
-		// printf("===FG0:%d, serial=%d\n", m_InsRobot->m_Flange_NA0.m_buf.m_Rlen, *((FX_INT32 *)&m_InsRobot->m_Flange_NA0.m_buf.m_Recvbuf[2]));
 		if (m_InsRobot->m_Flange_NA0.m_buf.m_Rlen == sizeof(DDSS))
 		{
 			m_InsRobot->m_ACB1.WriteBuf((unsigned char *)m_InsRobot->m_Flange_NA0.m_buf.m_Recvbuf, sizeof(DDSS));
@@ -2194,7 +2147,6 @@ FX_VOID RobotCtrl::DoRecv()
 	m_InsRobot->m_Flange_NA1.OnRecv();
 	while (m_InsRobot->m_Flange_NA1.m_buf.m_Rlen > 0)
 	{
-		// printf("===FG1:%d, serial=%d\n", m_Flange_NA1.m_buf.m_Rlen, *((FX_INT32 *)&m_InsRobot->m_Flange_NA1.m_buf.m_Recvbuf[2]));
 		if (m_InsRobot->m_Flange_NA1.m_buf.m_Rlen == sizeof(DDSS))
 		{
 			m_InsRobot->m_ACB2.WriteBuf((unsigned char *)m_InsRobot->m_Flange_NA1.m_buf.m_Recvbuf, sizeof(DDSS));
@@ -2215,6 +2167,29 @@ FX_VOID RobotCtrl::DoSend()
 	m_InsRobot->m_RtSendLock = FX_TRUE;
 	m_InsRobot->m_RT_NA.OnSend();
 	m_InsRobot->m_RtSendLock = FX_FALSE;
+}
+
+FX_BOOL RobotCtrl::WaitOpReturn(FX_INT32 serial, FX_INT32 timeout)
+{
+	GetIns();
+	for (FX_INT32 i = 0; i < timeout; i++)
+	{
+		CFXULT::UniMilliSleep(1);
+		FX_INT32 ret_s = m_InsRobot->m_RobotSG.m_OP_SET.m_OpRetSerial;
+		if (ret_s % 100 == serial)
+		{
+			FX_INT32 ret_v = ret_s / 100;
+			if (ret_v == 0)
+			{
+				return FX_TRUE;
+			}
+			else
+			{
+				return FX_FALSE;
+			}
+		}
+	}
+	return FX_FALSE;
 }
 
 FX_BOOL RobotCtrl::SetIns(FX_INT32 ins)

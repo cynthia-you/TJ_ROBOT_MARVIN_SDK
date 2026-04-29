@@ -213,30 +213,17 @@ bool CTCPAgent::OnLinkTo(unsigned char ip1, unsigned char ip2, unsigned char ip3
 	struct sockaddr_in addrSrv;
 	memset(&addrSrv, 0, sizeof(addrSrv));
 	addrSrv.sin_family = AF_INET;
-	addrSrv.sin_port = htons(port);			 /// 服务器端口
-	addrSrv.sin_addr.s_addr = inet_addr(ip); /// 服务器ip
+	addrSrv.sin_port = htons(port);
+	addrSrv.sin_addr.s_addr = inet_addr(ip);
 
-	// 创建套接字
 	m_iSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (SOCKET_ERROR == m_iSocket)
+	if (SOCKET_ERROR == (int)m_iSocket)
 	{
 		printf("OnLinkTo ERR1\n");
 		m_iSocket = INVALID_SOCKET;
 		return false;
 	}
-	/*/
-	struct ifreq interface;
-	strncpy(interface.ifr_ifrn.ifrn_name, "eth0",strlen("eth0"));
-	long tret = setsockopt(m_iSocket, SOL_SOCKET, SO_BINDTODEVICE,(char *)&interface, sizeof(interface));
-	if ( tret != 0 )
-	{
-		printf("OnLinkTo ERR2  %d\n",tret);
-		m_iSocket = INVALID_SOCKET;
-		return false;
-	}
-	/*/
-	// 向服务器发出连接请求
-	if (connect(m_iSocket, (struct sockaddr *)&addrSrv, sizeof(addrSrv)) == INVALID_SOCKET)
+	if (connect(m_iSocket, (struct sockaddr *)&addrSrv, sizeof(addrSrv)) == SOCKET_ERROR)
 	{
 
 		printf("OnLinkTo ERR3\n");

@@ -8,8 +8,11 @@
 #include <stdlib.h>
 #define LOOPHANDLE HANDLE
 #define socklen_t int
-#pragma comment(lib, "ws2_32.lib")
 #include <mmsystem.h>
+#endif
+
+#ifdef _MSC_VER
+#pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
 #endif
 
@@ -55,4 +58,3 @@
 #endif
 
 #endif
-

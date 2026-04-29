@@ -38,10 +38,10 @@ FX_BOOL FXFileClient::RecvFile(FX_CHAR *local_file, FX_CHAR *remote_file)
 
 FX_BOOL FXFileClient::OnSendFile(FX_CHAR *local_file, FX_CHAR *remote_file)
 {
-
+    if (FileO == NULL)
+        return FX_FALSE;
     if (FileO->SendFile(local_file, remote_file) == FX_TRUE)
     {
-
         printf("[INFO]: send file local file:%s, remote file: %s\n ", local_file, remote_file);
         return FX_TRUE;
     }
@@ -50,7 +50,8 @@ FX_BOOL FXFileClient::OnSendFile(FX_CHAR *local_file, FX_CHAR *remote_file)
 
 FX_BOOL FXFileClient::OnRecvFile(FX_CHAR *local_file, FX_CHAR *remote_file)
 {
-
+    if (FileO == NULL)
+        return FX_FALSE;
     if (FileO->RecvFile(local_file, remote_file) == FX_TRUE)
     {
         printf("[INFO]: receve file from remote file: %s to local file:%s, \n ", remote_file, local_file);

@@ -383,7 +383,6 @@ FX_BOOL CAxisPln::OnPln(FX_DOUBLE start_pos, FX_DOUBLE end_pos, FX_DOUBLE vel, F
 	FX_INT32 num = OnGetPlnNum();
 	FX_DOUBLE rp = 0.0;
 	FX_DOUBLE rv = 0.0;
-	FX_DOUBLE temp = 0.0;
 	for (i = 0; i < num; i++)
 	{
 		rp = OnGetPln(&rv);
@@ -929,7 +928,6 @@ FX_BOOL CAxisPln::OnMovL(FX_INT32 RobotSerial, Vect7 ref_joints, Vect6 start_pos
 	CPointSet out;
 	out.OnInit(PotT_9d);
 	FX_DOUBLE tmp[9] = {0};
-	FX_DOUBLE ttmp[2] = {0};
 	for (i = 0; i < max_num; i++)
 	{
 		FX_DOUBLE *p = ret[max_num_axis].OnGetPoint(i);
@@ -1438,8 +1436,6 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_Cut(FX_INT32 RobotSerial, Vect7 startjoints, Vect
 		sp.m_Output_RetJoint[i] = startjoints[i];
 	}
 
-	FX_BOOL _jext = FX_FALSE;
-
 	for (i = 0; i < num; i++)
 	{
 		FX_DOUBLE *p = pset.OnGetPoint(i);
@@ -1467,10 +1463,8 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_Cut(FX_INT32 RobotSerial, Vect7 startjoints, Vect
 
 		if (sp.m_Output_IsJntExd == FX_TRUE)
 		{
-			_jext = FX_TRUE;
 			FX_DOUBLE cur_ext = sp.m_Output_JntExdABS;
 
-			FX_DOUBLE old_ext = cur_ext;
 			FX_INT32 dir = 1;
 			sp.m_Input_ZSP_Angle = 0.01;
 			FX_Robot_Kine_IK_NSP(RobotSerial, &sp);
@@ -1486,7 +1480,6 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_Cut(FX_INT32 RobotSerial, Vect7 startjoints, Vect
 					return FX_FALSE;
 				}
 				dir = -1;
-				old_ext = cur_ext;
 			}
 			else
 			{
@@ -1520,8 +1513,6 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_Cut(FX_INT32 RobotSerial, Vect7 startjoints, Vect
 
 		retJoints.OnSetPoint(&p[19]);
 	}
-	FX_INT32 final_num = retJoints.OnGetPointNum();
-	FX_CHAR *pp = path;
 	retJoints.OnSave(path);
 
 	return FX_TRUE;
@@ -1760,8 +1751,6 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_CutA(FX_INT32 RobotSerial, Vect7 startjoints, Vec
 		sp.m_Output_RetJoint[i] = startjoints[i];
 	}
 
-	FX_BOOL _jext = FX_FALSE;
-
 	for (i = 0; i < num; i++)
 	{
 		FX_DOUBLE *p = pset.OnGetPoint(i);
@@ -1789,10 +1778,8 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_CutA(FX_INT32 RobotSerial, Vect7 startjoints, Vec
 
 		if (sp.m_Output_IsJntExd == FX_TRUE)
 		{
-			_jext = FX_TRUE;
 			FX_DOUBLE cur_ext = sp.m_Output_JntExdABS;
 
-			FX_DOUBLE old_ext = cur_ext;
 			FX_INT32 dir = 1;
 			sp.m_Input_ZSP_Angle = 0.01;
 			FX_Robot_Kine_IK_NSP(RobotSerial, &sp);
@@ -1808,7 +1795,6 @@ FX_BOOL CAxisPln::OnMovL_KeepJ_CutA(FX_INT32 RobotSerial, Vect7 startjoints, Vec
 					return FX_FALSE;
 				}
 				dir = -1;
-				old_ext = cur_ext;
 			}
 			else
 			{
@@ -1864,7 +1850,6 @@ FX_BOOL CAxisPln::OnMovJ(FX_INT32 RobotSerial, Vect7 start_joint, Vect7 end_join
 	CPointSet ret[7];
 	FX_INT32 num[7] = {0};
 	FX_INT32 max_num = 0;
-	FX_INT32 max_axis = 0;
 	for (i = 0; i < 7; i++)
 	{
 		if (!same_tag[i])
@@ -1874,7 +1859,6 @@ FX_BOOL CAxisPln::OnMovJ(FX_INT32 RobotSerial, Vect7 start_joint, Vect7 end_join
 			if (num[i] > max_num)
 			{
 				max_num = num[i];
-				max_axis = i;
 			}
 		}
 	}
@@ -1900,7 +1884,6 @@ FX_BOOL CAxisPln::OnMovJ(FX_INT32 RobotSerial, Vect7 start_joint, Vect7 end_join
 	}
 
 	FX_INT32 final_num = final_ret.OnGetPointNum();
-	FX_CHAR *pp = path;
 	if (final_ret.OnSave(path) == FX_FALSE)
 	{
 		printf("num= %d FX_FALSE\n", final_num);
@@ -2263,11 +2246,8 @@ FX_BOOL CAxisPln::OnSendPoints(CPointSet *out)
 FX_DOUBLE CAxisPln::OnGetLength(Vect6 start_pos, Vect6 end_pos, Quaternion Q_start, Quaternion Q_end)
 {
 	FX_INT32 i = 0;
-	FX_INT32 j = 0;
-
 	// XYZ Offset
 	FX_DOUBLE xyz_len_square_ = 0.0;
-	FX_DOUBLE xyz_len_ = 0.0;
 	FX_DOUBLE diff = 0.0;
 
 	for (i = 0; i < 3; i++)
@@ -2275,8 +2255,6 @@ FX_DOUBLE CAxisPln::OnGetLength(Vect6 start_pos, Vect6 end_pos, Quaternion Q_sta
 		diff = end_pos[i] - start_pos[i];
 		xyz_len_square_ += diff * diff;
 	}
-	xyz_len_ = sqrt(xyz_len_square_);
-
 	// Cuter Euler-Angle based on Base_Coordinate
 	FX_ABC2Quaternions(start_pos, Q_start);
 	FX_ABC2Quaternions(end_pos, Q_end);
@@ -2440,7 +2418,6 @@ FX_BOOL CAxisPln::OnMovL_DualArm_FixBody(DualArm_FixedBody *DA_FB, CPointSet *Le
 	// Cut Cartesian trajectory
 	CPointSet cartesian_traj_left;
 	CPointSet cartesian_traj_right;
-	FX_INT32 overlap_num = 0;
 	cartesian_traj_left.OnInit(PotT_7d); // Position & Quaternion
 	cartesian_traj_left.OnEmpty();
 	cartesian_traj_right.OnInit(PotT_7d); // Position & Quaternion
@@ -2478,9 +2455,6 @@ FX_BOOL CAxisPln::OnMovL_DualArm_FixBody(DualArm_FixedBody *DA_FB, CPointSet *Le
 		cartesian_traj_left.OnSetPoint(pose_left);
 		cartesian_traj_right.OnSetPoint(pose_right);
 	}
-
-	FX_INT32 final_num1 = cartesian_traj_left.OnGetPointNum();
-	FX_INT32 final_num2 = cartesian_traj_right.OnGetPointNum();
 
 	Left_Arm_Pln_Path->OnInit(PotT_7d);
 	Left_Arm_Pln_Path->OnEmpty();

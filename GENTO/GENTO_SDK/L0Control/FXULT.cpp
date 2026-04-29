@@ -196,7 +196,6 @@ FX_BOOL CMarvNetAgent::OnSend()
 		m_buf.m_STag = 0;
 		return FX_FALSE;
 	}
-
 	FX_INT32L send_len = 0;
 	if (m_buf.m_Slen >= 0)
 	{
@@ -233,8 +232,6 @@ FX_BOOL CMarvNetAgent::OnSendLink()
 	FX_INT32L send_len = 0;
 
 	send_len = sendto(m_nc._tosock_, (FX_CHAR *)buf, 2, 0, (struct sockaddr *)&m_nc._to, sizeof(m_nc._to));
-
-	// printf("send_len:%ld\n", send_len);
 	if (send_len != 2)
 	{
 		return FX_FALSE;
